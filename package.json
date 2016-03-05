@@ -1,0 +1,40 @@
+{
+  "name": "react-nexus-starter",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node build/server",
+    "build:client": "webpack --config webpack.config.client.babel.js",
+    "build:server": "webpack --config webpack.config.server.babel.js",
+    "build": "rimraf build && npm run build:server && npm run build:client"
+  },
+  "author": "Anthony Camboni",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-loader": "^6.2.4",
+    "babel-plugin-transform-async-to-module-method": "^6.5.2",
+    "babel-preset-es2015-auto": "^1.0.1",
+    "babel-preset-react": "^6.5.0",
+    "isomorphic-style-loader": "0.0.12",
+    "json-loader": "^0.5.4",
+    "koa-webpack-hot-middleware": "^1.0.3",
+    "rimraf": "^2.5.2",
+    "webpack": "^1.12.14"
+  },
+  "dependencies": {
+    "bluebird": "^3.3.3",
+    "css-loader": "^0.23.1",
+    "koa": "^2.0.0-alpha.3",
+    "koa-convert": "^1.2.0",
+    "koa-router": "^7.0.1",
+    "koa-send": "^3.1.0",
+    "koa-webpack-dev": "^1.0.2",
+    "koa-webpack-dev-middleware": "^1.1.0",
+    "react": "^0.14.7",
+    "style-loader": "^0.13.0",
+    "webpack": "^2.1.0-beta.4",
+    "webpack-hot-middleware": "^2.9.1",
+    "webpack-node-externals": "^1.0.0"
+  }
+}
