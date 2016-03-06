@@ -1,7 +1,7 @@
-const path = require('path');
-const webpack = require('webpack');
-const postCssCssNext = require('postcss-cssnext');
-const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
+import path from 'path';
+import webpack from 'webpack';
+import postCssCssNext from 'postcss-cssnext';
+import ExtractTextWebpackPlugin from 'extract-text-webpack-plugin';
 
 function config({ target = 'client', env = 'development' }) {
   const web = target === 'client';
