@@ -7,6 +7,7 @@
     "start": "node build/server",
     "build:client": "webpack --env.target=client --env.env=$NODE_ENV",
     "build:server": "webpack --env.target=server --env.env=$NODE_ENV",
+    "dev": "webpack --env.target=server --env.env=development --watch",
     "build": "rimraf build && npm run build:server && npm run build:client"
   },
   "author": "Anthony Camboni",

@@ -2,6 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 import postCssCssNext from 'postcss-cssnext';
 import ExtractTextWebpackPlugin from 'extract-text-webpack-plugin';
+import webpackNodeExternals from 'webpack-node-externals';
 
 function config({ target = 'client', env = 'development' }) {
   const web = target === 'client';
@@ -11,7 +12,7 @@ function config({ target = 'client', env = 'development' }) {
     target: web ? 'web' : 'node',
     devtool: dev ? 'eval-source-map' : null,
     entry: [
-      ...(web && dev ? ['webpack-hot-middleware/client'] : []),
+      ...(dev ? (web ? ['webpack-hot-middleware/client'] : ['webpack/hot/poll?1000']) : []),
       `./src/${web ? 'client' : 'server'}`
     ],
     output: {
@@ -66,7 +67,9 @@ function config({ target = 'client', env = 'development' }) {
         new webpack.NoErrorsPlugin(),
       ] : []),
     ],
-    externals: web ? null : /^(?!((\.*\/)|!)).*$/,
+    externals: web ? null : [webpackNodeExternals({
+      whitelist: ['webpack/hot/poll?1000'],
+    })],
     node: web ? null : {
       __filename: false,
       __dirname: false,
