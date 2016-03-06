@@ -1,9 +1,13 @@
 {
-  "presets": ["es2015-webpack", "react"],
+  "presets": ["es2015-auto", "react"],
   "plugins": [
     ["transform-async-to-module-method", {
       "module": "bluebird",
       "method": "coroutine"
-    }]
+    }],
+    ["transform-runtime", {
+     "polyfill": false,
+     "regenerator": true
+   }]
   ]
 }

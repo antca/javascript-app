@@ -9,6 +9,7 @@ function config({ target = 'client', env = 'development' }) {
 
   return {
     target: web ? 'web' : 'node',
+    devtool: dev ? 'eval-source-map' : null,
     entry: [
       ...(web && dev ? ['webpack-hot-middleware/client'] : []),
       `./src/${web ? 'client' : 'server'}`
