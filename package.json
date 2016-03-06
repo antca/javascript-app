@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node build/server",
-    "build:client": "webpack --config webpack.config.client.babel.js",
-    "build:server": "webpack --config webpack.config.server.babel.js",
+    "build:client": "webpack --env.target=client --env.env=$NODE_ENV",
+    "build:server": "webpack --env.target=server --env.env=$NODE_ENV",
     "build": "rimraf build && npm run build:server && npm run build:client"
   },
   "author": "Anthony Camboni",
@@ -32,6 +32,7 @@
     "koa-webpack-dev": "^1.0.2",
     "koa-webpack-dev-middleware": "^1.1.0",
     "react": "^0.14.7",
+    "react-addons-update": "^0.14.7",
     "style-loader": "^0.13.0",
     "webpack": "^2.1.0-beta.4",
     "webpack-hot-middleware": "^2.9.1",
