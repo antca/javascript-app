@@ -18,22 +18,28 @@ function config({ target = 'client', env = 'development' }) {
     output: {
       libraryTarget: web ? void 0 : 'commonjs',
       path: path.resolve(__dirname, 'build', web ? 'public' : ''),
-      publicPath: web && dev ? '/' : null,
+      publicPath: '/',
       filename: `${web ? 'client' : 'server'}.js`,
     },
     module: {
       loaders: [
         {
-          test: /\.json$/,
+          test: /\.json$/i,
           loader: 'json',
         },
         {
-          test: /\.jsx?$/,
+          test: /\.jsx?$/i,
           exclude: /node_modules/,
           loader: 'babel',
         },
         {
-          test: /\.css$/,
+          test: /\.(gif|png|jpe?g|svg)$/i,
+          loaders: [
+            `${web ? '' : 'fake-'}url?limit=10000${web ? '!image-webpack?{progressive:true, optimizationLevel: 7, interlaced: false, pngquant:{quality: "65-90", speed: 4}}' : ''}`,
+          ],
+        },
+        {
+          test: /\.css$/i,
           loaders: ExtractTextWebpackPlugin.extract(
             web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
             `css?${dev ? '' : 'minimize&'}modules&importLoaders=1&localIdentName=${dev ? '[path]___[name]__[local]___' : ''}[hash:base64:5]!postcss`
