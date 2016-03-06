@@ -1,8 +1,10 @@
 import koaConvert from 'koa-convert';
-import webpackConfig from '../../../webpack.config.client.babel';
+import getWebpackConfig from '../../../webpack.config.babel';
 import Webpack from 'webpack';
 import koaWebpackHotMiddleware from 'koa-webpack-hot-middleware';
 import koaWebpackDevMiddleware from 'koa-webpack-dev-middleware';
+
+const webpackConfig = getWebpackConfig({ target: 'client', env: 'development' });
 
 const compiler = new Webpack(webpackConfig);
 

@@ -1,11 +1,23 @@
 import path from 'path';
-
-import _ from 'lodash';
-import update from 'react-addons-update';
 import webpack from 'webpack';
+import postCssCssNext from 'postcss-cssnext';
 
-const configs = {
-  base: {
+function config({ target = 'client', env = 'development' }) {
+  const web = target === 'client';
+  const dev = env === 'development';
+
+  return {
+    target: web ? 'web' : 'node',
+    entry: [
+      ...(web && dev ? ['webpack-hot-middleware/client'] : []),
+      `./src/${web ? 'client' : 'server'}`
+    ],
+    output: {
+      libraryTarget: web ? void 0 : 'commonjs',
+      path: path.resolve(__dirname, 'build', web ? 'public' : ''),
+      publicPath: web && dev ? '/' : null,
+      filename: `${web ? 'client' : 'server'}.js`,
+    },
     module: {
       loaders: [
         {
@@ -20,83 +32,30 @@ const configs = {
         {
           test: /\.css$/,
           loaders: [
-            'isomorphic-style?sourceMap',
-            'css?modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
+            `${web ? '' : 'fake-'}style${dev ? '?sourceMap' : ''}`,
+            `css?modules&importLoaders=1&localIdentName=${dev ? '[path]___[name]__[local]___' : ''}[hash:base64:5]`,
+            'postcss',
           ],
         },
       ],
     },
-    plugins: [],
-    resolve: {
-      extensions: ['', '.js', '.json', '.jsx'],
-    },
-  },
-  server: {
-    target: { $set: 'node' },
-    entry: {
-      $set: [
-        './src/server',
-      ],
-    },
-    output: {
-      $set: {
-        libraryTarget: 'commonjs',
-        path: path.resolve(__dirname, 'build'),
-        filename: 'server.js',
-      },
-    },
-    externals: {
-      $set: /^(?!((\.*\/)|!)).*$/,
-    },
-    node: {
-      $set: {
-        __filename: true,
-        __dirname: true,
-      },
-    },
-  },
-  serverDevelopment: {
-
-  },
-  serverProduction: {
-
-  },
-  client: {
-    target: { $set: 'web' },
-    entry: {
-      $set: [
-        './src/client',
-      ],
-    },
-    output: {
-      $set: {
-        path: path.resolve(__dirname, 'build', 'public'),
-        filename: 'client.js',
-      },
-    },
-  },
-  clientDevelopment: {
-    entry: {
-      $unshift: ['webpack-hot-middleware/client'],
-    },
-    output: {
-      publicPath: { $set: '/' },
-    },
-    plugins: {
-      $unshift: [
+    postcss: () => [postCssCssNext],
+    plugins: [
+      ...(dev ? [
         new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoErrorsPlugin(),
-      ],
+      ] : []),
+    ],
+    externals: web ? null : /^(?!((\.*\/)|!)).*$/,
+    node: web ? null : {
+      __filename: true,
+      __dirname: true,
     },
-  },
-  clientProduction: {
-
-  },
-};
-
-function config({ target = 'server', env = 'development' }) {
-  return update(update(configs.base, configs[target]), configs[`${target}${_.capitalize(env)}`]);
+    resolve: {
+      extensions: ['', '.js', '.json', '.jsx'],
+    },
+  };
 }
 
 module.exports = config;
