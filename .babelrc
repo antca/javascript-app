@@ -1,5 +1,5 @@
 {
-  "presets": ["es2015-auto", "react"],
+  "presets": ["es2015-webpack", "react"],
   "plugins": [
     ["transform-async-to-module-method", {
       "module": "bluebird",

@@ -1,6 +1,6 @@
-import path from 'path';
-import webpack from 'webpack';
-import postCssCssNext from 'postcss-cssnext';
+const path = require('path');
+const webpack = require('webpack');
+const postCssCssNext = require('postcss-cssnext');
 
 function config({ target = 'client', env = 'development' }) {
   const web = target === 'client';
