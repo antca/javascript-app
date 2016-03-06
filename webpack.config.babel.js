@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const postCssCssNext = require('postcss-cssnext');
+const ExtractTextWebpackPlugin = require('extract-text-webpack-plugin');
 
 function config({ target = 'client', env = 'development' }) {
   const web = target === 'client';
@@ -31,26 +32,43 @@ function config({ target = 'client', env = 'development' }) {
         },
         {
           test: /\.css$/,
-          loaders: [
-            `${web ? '' : 'fake-'}style${dev ? '?sourceMap' : ''}`,
-            `css?modules&importLoaders=1&localIdentName=${dev ? '[path]___[name]__[local]___' : ''}[hash:base64:5]`,
-            'postcss',
-          ],
+          loaders: ExtractTextWebpackPlugin.extract(
+            web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
+            `css?${dev ? '' : 'minimize&'}modules&importLoaders=1&localIdentName=${dev ? '[path]___[name]__[local]___' : ''}[hash:base64:5]!postcss`
+          ),
         },
       ],
     },
     postcss: () => [postCssCssNext],
     plugins: [
+      new webpack.DefinePlugin({
+        __DEV__: JSON.stringify(dev),
+      }),
+      new ExtractTextWebpackPlugin('client.css', {
+        allChunks: true,
+        disable: dev || !web,
+      }),
+      new webpack.optimize.OccurrenceOrderPlugin(),
+      ...(dev ? [] : [
+        new webpack.optimize.DedupePlugin(),
+        new webpack.optimize.UglifyJsPlugin({
+          output: {
+            comments: false,
+          },
+          compress: {
+            warnings: false,
+          },
+        }),
+      ]),
       ...(dev ? [
-        new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoErrorsPlugin(),
       ] : []),
     ],
     externals: web ? null : /^(?!((\.*\/)|!)).*$/,
     node: web ? null : {
-      __filename: true,
-      __dirname: true,
+      __filename: false,
+      __dirname: false,
     },
     resolve: {
       extensions: ['', '.js', '.json', '.jsx'],

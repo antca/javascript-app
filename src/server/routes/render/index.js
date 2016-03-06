@@ -15,9 +15,12 @@ const render = new Router()
   await prepare(app);
   const index = React.createElement(Index, {
     flux: js2b64(flux.dumpState()),
-    markup: ReactDOM.renderToString(app)
+    markup: ReactDOM.renderToString(app),
+    cssPath: __DEV__ ? null : 'client.css',
+    jsPath: 'client.js',
+    title: 'App title',
   });
   ctx.body = `<!DOCTYPE html>${ReactDOM.renderToStaticMarkup(index)}`;
-})
+});
 
 export default render;

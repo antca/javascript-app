@@ -1,15 +1,16 @@
 import React from 'react';
 
-function Index({ flux, markup }) {
+function Index({ title, flux, markup, cssPath, jsPath }) {
   return (
     <html lang='en'>
     <head>
       <meta charSet='UTF-8' />
-      <title>Test</title>
+      <title>{title}</title>
+      {cssPath ? <link rel='stylesheet' href={cssPath} /> : null}
     </head>
     <body>
       <div id='app' data-flux={flux} dangerouslySetInnerHTML={{ __html: markup }} />
-      <script src='client.js'></script>
+      <script src={jsPath}></script>
     </body>
     </html>
   );

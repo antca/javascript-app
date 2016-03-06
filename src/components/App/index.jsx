@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { root } from 'react-nexus';
 import styles from './styles.css';
 
-import Test from '../Test';
+import Test from './Test';
 
 class App extends Component {
   render() {
