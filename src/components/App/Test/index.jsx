@@ -1,6 +1,7 @@
 import React from 'react';
 import { deps } from 'react-nexus';
 import box from '../../../assets/images/box.svg';
+import styles from './styles.css';
 
 function TestMessage({ state }) {
   if(state.isPending()) {
@@ -20,11 +21,13 @@ function Test({ testState, refreshTest, refreshCountState }) {
         {' '}
         <span>{`Refreshed: ${refreshCountState.value} times !`}</span>
       </div>
-      <button onClick={refreshTest}>{'Refresh'}</button>
+      <button className={styles.button} onClick={refreshTest}>{'Refresh !'}</button>
       <img src={box} />
     </div>
   );
 }
+
+export { Test, TestMessage };
 
 export default deps(() => ({
   actions: {

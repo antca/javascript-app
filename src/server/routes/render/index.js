@@ -16,8 +16,8 @@ const render = new Router()
   const index = React.createElement(Index, {
     flux: js2b64(flux.dumpState()),
     markup: ReactDOM.renderToString(app),
-    cssPath: __DEV__ ? null : 'client.css',
-    jsPath: 'client.js',
+    cssPath: __DEV__ ? null : 'public/client.css',
+    jsPath: 'public/client.js',
     title: 'App title',
   });
   ctx.body = `<!DOCTYPE html>${ReactDOM.renderToStaticMarkup(index)}`;

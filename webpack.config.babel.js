@@ -11,15 +11,18 @@ function config({ target = 'client', env = 'development' }) {
   return {
     target: web ? 'web' : 'node',
     devtool: dev ? 'eval-source-map' : null,
-    entry: [
-      ...(dev ? (web ? ['webpack-hot-middleware/client'] : ['webpack/hot/poll?1000']) : []),
-      `./src/${web ? 'client' : 'server'}`
-    ],
+    entry: {
+      [web ? 'public/client' : 'server'] : [
+        ...(dev ? (web ? ['webpack-hot-middleware/client'] : ['webpack/hot/poll?1000']) : []),
+        `./src/${web ? 'client' : 'server'}`,
+      ],
+      [`tests/${web ? 'client' : 'server'}`]: `./src/tests/${web ? 'client' : 'server'}`,
+    },
     output: {
       libraryTarget: web ? void 0 : 'commonjs',
-      path: path.resolve(__dirname, 'build', web ? 'public' : ''),
+      path: path.resolve(__dirname, 'build'),
       publicPath: '/',
-      filename: `${web ? 'client' : 'server'}.js`,
+      filename: '[name].js',
     },
     module: {
       loaders: [
@@ -35,7 +38,8 @@ function config({ target = 'client', env = 'development' }) {
         {
           test: /\.(gif|png|jpe?g|svg)$/i,
           loaders: [
-            `${web ? '' : 'fake-'}url?limit=10000${web ? '!image-webpack?{progressive:true, optimizationLevel: 7, interlaced: false, pngquant:{quality: "65-90", speed: 4}}' : ''}`,
+            `${web ? '' : 'fake-'}url?limit=1000&name=public/images/[hash].[ext]`,
+            'image-webpack?{progressive:true, optimizationLevel: 7, interlaced: false, pngquant:{quality: "65-90", speed: 4}}',
           ],
         },
         {
@@ -52,7 +56,7 @@ function config({ target = 'client', env = 'development' }) {
       new webpack.DefinePlugin({
         __DEV__: JSON.stringify(dev),
       }),
-      new ExtractTextWebpackPlugin('client.css', {
+      new ExtractTextWebpackPlugin('public/client.css', {
         allChunks: true,
         disable: dev || !web,
       }),
