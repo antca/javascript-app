@@ -11,6 +11,7 @@ function config({ target = 'client', env = 'development' }) {
   return {
     target: web ? 'web' : 'node',
     devtool: dev ? 'eval-source-map' : null,
+    debug: dev,
     entry: {
       [web ? 'public/client' : 'server'] : [
         ...(dev ? (web ? ['webpack-hot-middleware/client'] : ['webpack/hot/poll?1000']) : []),
@@ -23,6 +24,7 @@ function config({ target = 'client', env = 'development' }) {
       path: path.resolve(__dirname, 'build'),
       publicPath: '/',
       filename: '[name].js',
+      pathInfo: dev,
     },
     module: {
       loaders: [
