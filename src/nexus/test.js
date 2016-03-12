@@ -9,7 +9,7 @@ const actions = [
   Action.create('/test/refresh', async (flux) => {
     await flux.store('/api/test').fetch({});
     const refreshCountStore = flux.store('/test/refreshCount');
-    refreshCountStore.set({}, refreshCountStore.get({}) + 1);
+    refreshCountStore.set({}, refreshCountStore.readFromState({}).value + 1);
   }),
 ];
 
