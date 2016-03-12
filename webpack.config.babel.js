@@ -10,11 +10,11 @@ function config({ target = 'client', env = 'development' }) {
 
   return {
     target: web ? 'web' : 'node',
-    devtool: dev ? 'eval-source-map' : null,
+    devtool: dev ? (web ? 'eval-source-map' : 'inline-source-map') : null,
     debug: dev,
     entry: {
       [web ? 'public/client' : 'server'] : [
-        ...(dev ? (web ? ['webpack-hot-middleware/client'] : ['webpack/hot/poll?1000']) : []),
+        ...(dev ? (web ? ['webpack-hot-middleware/client'] : ['source-map-support/register', 'webpack/hot/poll?1000']) : []),
         `./src/${web ? 'client' : 'server'}`,
       ],
       [`tests/${web ? 'client' : 'server'}`]: `./src/tests/${web ? 'client' : 'server'}`,

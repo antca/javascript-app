@@ -33,6 +33,7 @@
     "postcss-cssnext": "^2.4.0",
     "postcss-loader": "^0.8.1",
     "rimraf": "^2.5.2",
+    "source-map-support": "^0.4.0",
     "style-loader": "^0.13.0",
     "url-loader": "^0.5.7",
     "webpack": "^2.1.0-beta.4",
