@@ -20,7 +20,7 @@ function config({ target = 'client', env = 'development' }) {
       [`tests/${web ? 'client' : 'server'}`]: `./src/tests/${web ? 'client' : 'server'}`,
     },
     output: {
-      libraryTarget: web ? void 0 : 'commonjs',
+      libraryTarget: 'umd',
       path: path.resolve(__dirname, 'build'),
       publicPath: '/',
       filename: '[name].js',
