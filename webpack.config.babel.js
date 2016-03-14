@@ -4,7 +4,7 @@ import postCssCssNext from 'postcss-cssnext';
 import ExtractTextWebpackPlugin from 'extract-text-webpack-plugin';
 import webpackNodeExternals from 'webpack-node-externals';
 
-function config({ target = 'client', env = 'development' }) {
+function config({ target = 'client', env = process.env.NODE_ENV }) {
   const web = target === 'client';
   const dev = env === 'development';
 
