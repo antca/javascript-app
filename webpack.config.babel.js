@@ -56,6 +56,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
     postcss: () => [postCssCssNext],
     plugins: [
       new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(env),
         __DEV__: JSON.stringify(dev),
       }),
       new ExtractTextWebpackPlugin('public/client.css', {
