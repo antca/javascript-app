@@ -1,7 +1,7 @@
 {
   "name": "react-nexus-starter",
   "version": "0.0.0",
-  "description": "",
+  "description": "Starter project based on react-nexus and webpack",
   "main": "index.js",
   "scripts": {
     "start": "node build/server",
