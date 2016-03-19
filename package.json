@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node build/server",
-    "build:client": "webpack --env.target=client",
-    "build:server": "webpack --env.target=server",
+    "build:client": "webpack --env.target=client --env.env=production",
+    "build:server": "webpack --env.target=server --env.env=production",
     "build": "rimraf build && npm run build:server && npm run build:client",
-    "dev": "webpack --env.target=server --watch",
+    "dev": "webpack --env.target=server --env.env=development --watch",
     "test:server": "npm run build:server && mocha build/tests/server"
   },
   "author": "Anthony Camboni",
