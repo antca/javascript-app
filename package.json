@@ -1,10 +1,10 @@
 {
-  "name": "react-nexus-starter",
+  "name": "",
   "version": "0.0.0",
-  "description": "Starter project based on react-nexus and webpack",
-  "main": "index.js",
+  "description": "",
+  "author": "Anthony Camboni",
+  "license": "MIT",
   "scripts": {
-    "watch": "npm-watch",
     "start": "node build/server",
     "build:server": "webpack --env.target=server --env.env=production",
     "build:client": "webpack --env.target=client --env.env=production",
@@ -12,7 +12,7 @@
     "build": "rimraf build && npm run build:server && npm run build:client",
     "test:server": "tape build/tests/server.js | tap-diff --color",
     "test:client": "tape-run < build/tests/client.js | tap-diff --color",
-    "test:dev": "webpack --env.target=server --env.env=development --watch & webpack --env.target=client --env.env=development --watch & npm run watch",
+    "test:dev": "webpack --env.target=server --env.env=development --watch & webpack --env.target=client --env.env=development --watch & npm-watch",
     "test": "npm run build:server && npm run test:server && npm run build:client && npm run test:client",
     "dev": "npm run build:dev & npm run test:dev"
   },
@@ -20,8 +20,28 @@
     "test:client": "build/tests/client.js",
     "test:server": "build/tests/server.js"
   },
-  "author": "Anthony Camboni",
-  "license": "MIT",
+  "babel": {
+    "presets": [
+      "es2015-auto",
+      "react"
+    ],
+    "plugins": [
+      [
+        "transform-async-to-module-method",
+        {
+          "module": "bluebird",
+          "method": "coroutine"
+        }
+      ],
+      [
+        "transform-runtime",
+        {
+          "polyfill": false,
+          "regenerator": true
+        }
+      ]
+    ]
+  },
   "devDependencies": {
     "babel-loader": "^6.2.4",
     "babel-plugin-transform-async-to-module-method": "^6.5.2",
@@ -63,27 +83,5 @@
     "react": "^0.14.7",
     "react-dom": "^0.14.7",
     "react-nexus": "^4.0.0-alpha.0"
-  },
-  "babel": {
-    "presets": [
-      "es2015-auto",
-      "react"
-    ],
-    "plugins": [
-      [
-        "transform-async-to-module-method",
-        {
-          "module": "bluebird",
-          "method": "coroutine"
-        }
-      ],
-      [
-        "transform-runtime",
-        {
-          "polyfill": false,
-          "regenerator": true
-        }
-      ]
-    ]
   }
 }
