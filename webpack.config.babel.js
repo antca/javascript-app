@@ -91,7 +91,9 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
     externals: web ? null : [webpackNodeExternals({
       whitelist: ['webpack/hot/poll?1000'],
     })],
-    node: web ? null : {
+    node: web ? {
+      fs: 'empty',
+    } : {
       __filename: false,
       __dirname: false,
     },
