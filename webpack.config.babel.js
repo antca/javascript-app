@@ -3,6 +3,7 @@ import webpack from 'webpack';
 import postCssCssNext from 'postcss-cssnext';
 import ExtractTextWebpackPlugin from 'extract-text-webpack-plugin';
 import webpackNodeExternals from 'webpack-node-externals';
+import pkg from './package';
 
 function config({ target = 'client', env = process.env.NODE_ENV }) {
   const web = target === 'client';
@@ -36,6 +37,13 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
           test: /\.jsx?$/i,
           exclude: /node_modules/,
           loader: 'babel',
+          query: Object.assign({}, pkg.babel, {
+            babelrc: false,
+            presets: web ? ([
+              ...pkg.babel.presets.filter((preset) => preset !== 'es2015-auto'),
+              ...(dev ? ['es2015'] : ['es2015-webpack', 'es2015-webpack-loose']),
+            ]) : pkg.babel.presets,
+          }),
         },
         {
           test: /\.(gif|png|jpe?g|svg)$/i,
@@ -64,21 +72,21 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
         disable: dev || !web,
       }),
       new webpack.optimize.OccurrenceOrderPlugin(),
-      ...(dev ? [] : [
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin({
-          output: {
-            comments: false,
-          },
-          compress: {
-            warnings: false,
-          },
-        }),
-      ]),
       ...(dev ? [
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin(),
-      ] : []),
+          new webpack.HotModuleReplacementPlugin(),
+          new webpack.NoErrorsPlugin(),
+        ] : [
+          new webpack.optimize.DedupePlugin(),
+          ...(web ? [new webpack.optimize.UglifyJsPlugin({
+            output: {
+              comments: false,
+            },
+            compress: {
+              warnings: false,
+            },
+          })] : []),
+        ]
+      ),
     ],
     externals: web ? null : [webpackNodeExternals({
       whitelist: ['webpack/hot/poll?1000'],
