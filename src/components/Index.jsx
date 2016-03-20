@@ -7,7 +7,7 @@ function Index({ ctx, flux, markup }) {
       <head>
         <meta charSet='UTF-8' />
         <title>{'React Nexus App'}</title>
-        {__DEV__ ? null : <link rel='stylesheet' href={'public/client.css'} /> }
+        {__DEV__ ? null : <link rel='stylesheet' href={'public/client.css'} />}
       </head>
       <body>
         <div id='app' data-flux={js2b64(flux.dumpState())} dangerouslySetInnerHTML={{ __html: markup }} />
