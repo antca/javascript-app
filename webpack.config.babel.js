@@ -24,6 +24,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
       libraryTarget: 'umd',
       path: path.resolve(__dirname, 'build'),
       publicPath: '/',
+      chunkFilename: 'public/chunks/[id].js',
       filename: '[name].js',
       pathInfo: dev,
     },
