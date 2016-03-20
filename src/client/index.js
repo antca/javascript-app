@@ -8,7 +8,7 @@ const App = require('../components/App').default;
 
 const appDOMElement = document.querySelector('#app');
 
-const flux = createFlux();
+const flux = createFlux({ window });
 flux.loadState(b642js(appDOMElement.dataset.flux));
 
 const app = React.createElement(App, { flux });

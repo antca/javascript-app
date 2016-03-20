@@ -8,16 +8,16 @@ import App from '../../../components/App';
 import Index from '../../../components/Index';
 
 const render = new Router()
-.get('/', async (ctx) => {
-  const flux = createFlux(ctx);
+.get('/', async (context) => {
+  const flux = createFlux({ context });
   const app = React.createElement(App, { flux });
   await prepare(app);
   const index = React.createElement(Index, {
-    ctx,
+    context,
     flux,
     markup: ReactDOM.renderToString(app),
   });
-  ctx.body = `<!DOCTYPE html>${ReactDOM.renderToStaticMarkup(index)}`;
+  context.body = `<!DOCTYPE html>${ReactDOM.renderToStaticMarkup(index)}`;
 });
 
 export default render;

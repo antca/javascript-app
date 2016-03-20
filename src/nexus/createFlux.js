@@ -1,17 +1,18 @@
 import { Flux } from 'react-nexus';
+import url from 'url';
 
-import {
-  stores as testStores,
-  actions as testActions,
-} from './test';
+import createExampleModule from './example';
 
-function createFlux() {
+function createFlux({ context, window }) {
+
+  const exampleModule = createExampleModule(url.parse((context || window.location).href));
+
   return new Flux({
     actions: [
-      ...testActions,
+      ...exampleModule.actions,
     ],
     stores: [
-      ...testStores,
+      ...exampleModule.stores,
     ],
   });
 }

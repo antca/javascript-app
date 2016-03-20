@@ -31,10 +31,10 @@ export { Test, TestMessage };
 
 export default deps(() => ({
   actions: {
-    refreshTest: '/test/refresh',
+    refreshTest: '/refresh/welcome',
   },
   stores: {
-    testState: '/api/test',
-    refreshCountState: '/test/refreshCount',
+    testState: '/api/welcome',
+    refreshCountState: '/refreshCounter',
   },
 }))(Test);
