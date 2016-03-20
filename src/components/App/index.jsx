@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { root } from 'react-nexus';
 import styles from './styles.css';
-import box from '../../assets/images/box.svg';
+import box from './images/box.svg';
 import Example from './Example';
 
 class App extends Component {

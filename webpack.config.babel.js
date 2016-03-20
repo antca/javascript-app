@@ -18,7 +18,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
         ...(dev ? (web ? ['webpack-hot-middleware/client'] : ['source-map-support/register', 'webpack/hot/poll?1000']) : []),
         `./src/${web ? 'client' : 'server'}`,
       ],
-      [`tests/${web ? 'client' : 'server'}`]: `./src/tests/${web ? 'client' : 'server'}`,
+      [`tests/${web ? 'client' : 'server'}`]: `./src/${web ? 'client' : 'server'}/tests`,
     },
     output: {
       libraryTarget: 'umd',
