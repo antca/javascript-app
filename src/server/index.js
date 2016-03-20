@@ -9,6 +9,11 @@ import { api, render } from './routes';
 const app = new Koa();
 
 if(module.hot) {
+  module.hot.status((status) => {
+    if(status === 'abort') {
+      process.exit(0);
+    }
+  });
   app.use(require('./middlewares/dev').default());
 }
 
