@@ -23,6 +23,7 @@
   "babel": {
     "presets": [
       "es2015-auto",
+      "stage-1",
       "react"
     ],
     "plugins": [
@@ -51,6 +52,7 @@
     "babel-preset-es2015-webpack": "^6.4.0",
     "babel-preset-es2015-webpack-loose": "^6.3.14",
     "babel-preset-react": "^6.5.0",
+    "babel-preset-stage-1": "^6.5.0",
     "css-loader": "^0.23.1",
     "extract-text-webpack-plugin": "^1.0.1",
     "fake-style-loader": "^1.0.0",
