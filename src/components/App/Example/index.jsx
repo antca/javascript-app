@@ -1,28 +1,27 @@
 import React from 'react';
 import { deps } from 'react-nexus';
-import box from '../../../assets/images/box.svg';
 import styles from './styles.css';
 
 function TestMessage({ state }) {
   if(state.isPending()) {
-    return <span>{'Loading...'}</span>;
+    return <h2>{'Loading...'}</h2>;
   }
   if(state.isRejected()) {
-    return <span>{`Fail to get testState: ${state.reason}`}</span>;
+    return <h2>{`Fail to get testState: ${state.reason}`}</h2>;
   }
-  return <span>{state.value.message}</span>;
+  return (
+    <h2>{state.value.message}</h2>
+  );
 }
 
 function Test({ testState, refreshTest, refreshCountState }) {
   return (
     <div>
+      <TestMessage state={testState} />
       <div>
-        <TestMessage state={testState} />
-        {' '}
+        <button className={styles.button} onClick={refreshTest}>{'Refresh !'}</button>
         <span>{`Refreshed: ${refreshCountState.value} times !`}</span>
       </div>
-      <button className={styles.button} onClick={refreshTest}>{'Refresh !'}</button>
-      <img src={box} />
     </div>
   );
 }

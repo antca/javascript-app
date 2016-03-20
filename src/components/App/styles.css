@@ -1,3 +1,10 @@
+.box {
+  max-width: 1em;
+  margin-right: 0.5em;
+}
+
 .title {
-  color: green;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
