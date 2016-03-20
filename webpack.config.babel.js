@@ -27,6 +27,9 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
       filename: '[name].js',
       pathInfo: dev,
     },
+    url: {
+      dataUrlLimit: 1024,
+    },
     module: {
       loaders: [
         {
@@ -48,7 +51,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
         {
           test: /\.(gif|png|jpe?g|svg)$/i,
           loaders: [
-            `${web ? '' : 'fake-'}url?limit=1000&name=public/images/[hash].[ext]`,
+            `${web ? '' : 'fake-'}url?name=public/images/[hash].[ext]`,
             'image-webpack?{progressive:true, optimizationLevel: 7, interlaced: false, pngquant:{quality: "65-90", speed: 4}}',
           ],
         },
