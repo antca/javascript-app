@@ -8,7 +8,7 @@ import { api, render } from './routes';
 
 const app = new Koa();
 
-if(__DEV__) {
+if(module.hot) {
   app.use(require('./middlewares/dev').default());
 }
 
