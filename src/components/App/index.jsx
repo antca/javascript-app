@@ -10,7 +10,7 @@ class App extends Component {
       <div>
         <h1 className={styles.title}>
           <img className={styles.box} src={box} />
-          {'Webpack Universal'}
+          {'JavaScript App'}
         </h1>
         <Example />
       </div>
