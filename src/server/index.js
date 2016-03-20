@@ -24,5 +24,5 @@ app
   await koaSend(ctx, ctx.path, { root: path.resolve(__dirname, 'public') });
 }))
 .listen(8080, function () {
-  console.log(`Server started on port ${this.address().port} !`);
+  console.log(`Server started on port ${this.address().port}!`);
 });

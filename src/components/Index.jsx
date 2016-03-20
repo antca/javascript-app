@@ -6,12 +6,12 @@ function Index({ ctx, flux, markup }) {
     <html lang='en'>
       <head>
         <meta charSet='UTF-8' />
-        <title>{'React Nexus App'}</title>
-        {module.hot ? null : <link rel='stylesheet' href={'public/client.css'} />}
+        <title>{'JavaScript App'}</title>
+        {module.hot ? null : <link rel='stylesheet' href='public/client.css' />}
       </head>
       <body>
         <div id='app' data-flux={js2b64(flux.dumpState())} dangerouslySetInnerHTML={{ __html: markup }} />
-        <script src={'public/client.js'}></script>
+        <script src='public/client.js'></script>
       </body>
     </html>
   );
