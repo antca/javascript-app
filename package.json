@@ -8,13 +8,11 @@
     "start": "node build/server",
     "build:server": "webpack --env.target=server --env.env=production",
     "build:client": "webpack --env.target=client --env.env=production",
-    "build:dev": "webpack --env.target=server --env.env=development --watch",
     "build": "rimraf build && npm run build:server && npm run build:client",
     "test:server": "tape build/tests/server.js | tap-diff --color",
     "test:client": "tape-run < build/tests/client.js | tap-diff --color",
-    "test:dev": "webpack --env.target=server --env.env=development --watch & webpack --env.target=client --env.env=development --watch & npm-watch",
     "test": "npm run build:server && npm run test:server && npm run build:client && npm run test:client",
-    "dev": "npm run build:dev & npm run test:dev"
+    "dev": "webpack --env.target=server --env.env=development --watch & webpack --env.target=client --env.env=development --watch & npm-watch"
   },
   "watch": {
     "test:client": "build/tests/client.js",
