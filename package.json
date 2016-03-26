@@ -5,14 +5,17 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "start": "forever build/server.js",
+    "webpack-watch-dev": "webpack --env.env=development --watch",
+    "watch": "npm-watch",
+    "clean": "rimraf build",
+    "start": "forever --minUptime 1000ms --spinSleepTime 1000ms build/server.js",
     "build:server": "webpack --env.target=server --env.env=production",
     "build:client": "webpack --env.target=client --env.env=production",
-    "build": "rimraf build && npm run build:server && npm run build:client",
+    "build": "npm-run-all clean --parallel build:*",
     "test:server": "tape build/tests/server.js | tap-diff --color",
     "test:client": "tape-run < build/tests/client.js | tap-diff --color",
-    "test": "npm run build:server && npm run test:server && npm run build:client && npm run test:client",
-    "dev": "webpack --env.target=server --env.env=development --watch & webpack --env.target=client --env.env=development --watch & npm-watch"
+    "test": "npm-run-all build test:*",
+    "dev": "npm-run-all --parallel \"webpack-watch-dev -- --env.target=server\" \"webpack-watch-dev -- --env.target=client\" watch"
   },
   "watch": {
     "test:client": "build/tests/client.js",
@@ -61,6 +64,7 @@
     "koa-convert": "^1.2.0",
     "koa-webpack-dev-middleware": "^1.1.0",
     "koa-webpack-hot-middleware": "^1.0.3",
+    "npm-run-all": "^1.6.0",
     "npm-watch": "^0.1.1",
     "postcss-cssnext": "^2.4.0",
     "postcss-loader": "^0.8.1",
