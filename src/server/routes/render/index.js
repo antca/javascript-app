@@ -8,7 +8,7 @@ import App from '../../../components/App';
 import Index from '../../../components/Index';
 
 const render = new Router()
-.get('/', async (context) => {
+.get('*', async (context) => {
   const flux = createFlux({ context });
   const app = React.createElement(App, { flux });
   await prepare(app);

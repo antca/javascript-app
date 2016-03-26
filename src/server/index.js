@@ -18,11 +18,11 @@ if(module.hot) {
 }
 
 app
-.use(koaMount('/', render))
 .use(koaMount('/api', api))
-.use(koaMount('/public/', async (ctx) => {
+.use(koaMount('/public', async (ctx) => {
   await koaSend(ctx, ctx.path, { root: path.resolve(__dirname, 'public') });
 }))
+.use(render)
 .listen(8080, function () {
   console.log(`Server started on port ${this.address().port}!`);
 });
