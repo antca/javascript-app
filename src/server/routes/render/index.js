@@ -13,7 +13,6 @@ const render = new Router()
   const app = React.createElement(App, { flux });
   await prepare(app);
   const index = React.createElement(Index, {
-    context,
     flux,
     markup: ReactDOM.renderToString(app),
   });

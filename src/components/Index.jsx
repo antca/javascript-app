@@ -10,7 +10,7 @@ function Index({ ctx, flux, markup }) {
         {module.hot ? null : <link rel='stylesheet' href='public/client.css' />}
       </head>
       <body>
-        <div id='app' data-flux={js2b64(flux.dumpState())} dangerouslySetInnerHTML={{ __html: markup }} />
+        <div id='app' data-flux={flux ? js2b64(flux.dumpState()) : null} dangerouslySetInnerHTML={{ __html: markup }} />
         <script src='public/client.js'></script>
       </body>
     </html>

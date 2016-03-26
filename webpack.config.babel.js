@@ -3,6 +3,7 @@ import webpack from 'webpack';
 import postCssCssNext from 'postcss-cssnext';
 import ExtractTextWebpackPlugin from 'extract-text-webpack-plugin';
 import webpackNodeExternals from 'webpack-node-externals';
+import StaticSiteGeneratorWebpackPlugin from 'static-site-generator-webpack-plugin';
 import pkg from './package';
 
 function config({ target = 'client', env = process.env.NODE_ENV }) {
@@ -14,11 +15,11 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
     devtool: dev ? (web ? 'eval-source-map' : 'inline-source-map') : null,
     debug: dev,
     entry: {
-      [web ? 'public/client' : 'server'] : [
+      [`${web ? 'public/' : ''}${target}`] : [
         ...(dev ? (web ? ['webpack-hot-middleware/client'] : ['source-map-support/register', 'webpack/hot/poll?1000']) : []),
-        `./src/${web ? 'client' : 'server'}`,
+        `./src/${target}`,
       ],
-      [`tests/${web ? 'client' : 'server'}`]: `./src/${web ? 'client' : 'server'}/tests`,
+      [`tests/${target}`]: `./src/${target}/tests`,
     },
     output: {
       libraryTarget: 'umd',
@@ -90,6 +91,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
           })] : []),
         ]
       ),
+      ...(target === 'static' ? [new StaticSiteGeneratorWebpackPlugin('static', ['index.html'])] : []),
     ],
     externals: web ? null : [webpackNodeExternals({
       whitelist: ['webpack/hot/poll?1000'],
