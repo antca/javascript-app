@@ -5,9 +5,11 @@ import Koa from 'koa';
 import koaSend from 'koa-send';
 import koaMount from 'koa-mount';
 import { api, render } from './routes';
-import renderStaticSite from './renderStaticSite';
 
-if(!process.argv[1].match(/webpack$/)) {
+if(process.argv[1].match(/webpack$/)) {
+  module.exports = require('./renderStaticSite').default;
+}
+else {
   const app = new Koa();
 
   if(module.hot) {
@@ -29,5 +31,3 @@ if(!process.argv[1].match(/webpack$/)) {
     console.log(`Server started on port ${this.address().port}!`);
   });
 }
-
-export default renderStaticSite;
