@@ -5,7 +5,7 @@ import App from '../components/App';
 import Index from '../components/Index';
 import createFlux from '../nexus/createFlux';
 
-function render(locals, callback) {
+function renderStaticSite(locals, callback) {
   const flux = createFlux({ context: { href: '/' } });
   const app = React.createElement(App, { flux });
   const index = React.createElement(Index, {
@@ -15,4 +15,4 @@ function render(locals, callback) {
   callback(null, `<!DOCTYPE html>${ReactDOM.renderToStaticMarkup(index)}`);
 }
 
-export default render;
+export default renderStaticSite;

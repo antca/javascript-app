@@ -11,7 +11,6 @@
     "start": "forever --minUptime 1000ms --spinSleepTime 1000ms build/server.js",
     "build:server": "webpack --env.target=server --env.env=production",
     "build:client": "webpack --env.target=client --env.env=production",
-    "build:static": "webpack --env.target=static --env.env=production",
     "build": "npm-run-all clean --parallel build:*",
     "test:server": "tape build/tests/server.js | tap-diff --color",
     "test:client": "tape-run < build/tests/client.js | tap-diff --color",

@@ -81,17 +81,20 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
           new webpack.NoErrorsPlugin(),
         ] : [
           new webpack.optimize.DedupePlugin(),
-          ...(web ? [new webpack.optimize.UglifyJsPlugin({
-            output: {
-              comments: false,
-            },
-            compress: {
-              warnings: false,
-            },
-          })] : []),
+          ...(web ? [
+            new webpack.optimize.UglifyJsPlugin({
+              output: {
+                comments: false,
+              },
+              compress: {
+                warnings: false,
+              },
+            })
+          ] : [
+            new StaticSiteGeneratorWebpackPlugin('server', ['index.html']),
+          ]),
         ]
       ),
-      ...(target === 'static' ? [new StaticSiteGeneratorWebpackPlugin('static', ['index.html'])] : []),
     ],
     externals: web ? null : [webpackNodeExternals({
       whitelist: ['webpack/hot/poll?1000'],
