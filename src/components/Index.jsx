@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Index({ markup }) {
+function Index({ markup, fluxData }) {
   return (
     <html lang='en'>
       <head>
@@ -9,7 +9,7 @@ function Index({ markup }) {
         {module.hot ? null : <link rel='stylesheet' href='public/client.css' />}
       </head>
       <body>
-        <div id='app' dangerouslySetInnerHTML={{ __html: markup }} />
+        <div id='app' data-flux={fluxData} dangerouslySetInnerHTML={{ __html: markup }} />
         <script src='public/client.js'></script>
       </body>
     </html>

@@ -7,8 +7,10 @@ import koaMount from 'koa-mount';
 import { api, render } from './routes';
 
 if(process.argv[1].match(/webpack$/)) {
-  module.exports = (locals, callback) => {
-    callback(null, require('./renderApp').default(locals));
+  module.exports = ({ context = {}, prepareFlux = false } = {}, callback) => {
+    require('./renderApp').default(context, prepareFlux)
+    .then((page) => callback(null, page))
+    .catch((error) => callback(error));
   };
 }
 else {
