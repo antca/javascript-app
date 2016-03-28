@@ -1,7 +1,6 @@
 import React from 'react';
-import { js2b64 } from '../util/b64';
 
-function Index({ flux, markup }) {
+function Index({ markup }) {
   return (
     <html lang='en'>
       <head>
@@ -10,7 +9,7 @@ function Index({ flux, markup }) {
         {module.hot ? null : <link rel='stylesheet' href='public/client.css' />}
       </head>
       <body>
-        <div id='app' data-flux={js2b64(flux.dumpState())} dangerouslySetInnerHTML={{ __html: markup }} />
+        <div id='app' dangerouslySetInnerHTML={{ __html: markup }} />
         <script src='public/client.js'></script>
       </body>
     </html>

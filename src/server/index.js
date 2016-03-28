@@ -7,7 +7,9 @@ import koaMount from 'koa-mount';
 import { api, render } from './routes';
 
 if(process.argv[1].match(/webpack$/)) {
-  module.exports = require('./renderStaticSite').default;
+  module.exports = (locals, callback) => {
+    callback(null, require('./renderApp').default(locals));
+  };
 }
 else {
   const app = new Koa();
