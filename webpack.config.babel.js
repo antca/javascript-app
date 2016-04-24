@@ -16,7 +16,9 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
     debug: dev,
     entry: {
       [`${web ? 'public/' : ''}${target}`] : [
-        ...(dev ? (web ? ['webpack-hot-middleware/client'] : ['source-map-support/register', 'webpack/hot/poll?1000']) : []),
+        ...(dev ? (web ? ['webpack-hot-middleware/client', 'react-hot-loader/patch']
+                       : ['source-map-support/register', 'webpack/hot/poll?1000'])
+                : []),
         `./src/${target}`,
       ],
       [`tests/${target}`]: `./src/${target}/tests`,
@@ -48,6 +50,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
               ...pkg.babel.presets.filter((preset) => preset !== 'es2015-auto'),
               ...(dev ? ['es2015'] : ['es2015-webpack', 'es2015-webpack-loose']),
             ]) : pkg.babel.presets,
+            plugins: [...pkg.babel.plugins, ...(dev ? ['react-hot-loader/babel'] : [])],
           }),
         },
         {
