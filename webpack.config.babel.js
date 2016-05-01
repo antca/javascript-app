@@ -15,19 +15,19 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
     devtool: dev ? (web ? 'eval-source-map' : 'inline-source-map') : null,
     debug: dev,
     entry: {
-      [`${web ? 'public/' : ''}${target}`] : [
+      [target] : [
         ...(dev ? (web ? ['webpack-hot-middleware/client', 'react-hot-loader/patch']
                        : ['source-map-support/register', 'webpack/hot/poll?1000'])
                 : []),
         `./src/${target}`,
       ],
-      [`tests/${target}`]: `./src/${target}/tests`,
+      [`${web ? '../' : ''}tests/${target}`]: `./src/${target}/tests`,
     },
     output: {
       libraryTarget: 'umd',
-      path: path.resolve(__dirname, 'build'),
-      publicPath: '/',
-      chunkFilename: 'public/chunks/[id].js',
+      path: path.resolve(__dirname, 'build', web ? 'public' : ''),
+      publicPath: '/public/',
+      chunkFilename: 'chunks/[id].js',
       filename: '[name].js',
       pathInfo: dev,
     },
@@ -56,7 +56,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
         {
           test: /\.(gif|png|jpe?g|svg)$/i,
           loaders: [
-            `${web ? '' : 'fake-'}url?name=public/images/[hash].[ext]`,
+            `${web ? '' : 'fake-'}url?name=images/[hash].[ext]`,
             'image-webpack?{progressive:true, optimizationLevel: 7, interlaced: false, pngquant:{quality: "65-90", speed: 4}}',
           ],
         },
@@ -74,7 +74,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(env),
       }),
-      new ExtractTextWebpackPlugin('public/client.css', {
+      new ExtractTextWebpackPlugin('client.css', {
         allChunks: true,
         disable: dev || !web,
       }),
