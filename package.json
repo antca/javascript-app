@@ -15,7 +15,9 @@
     "test:server": "tape build/tests/server.js | tap-diff --color",
     "test:client": "tape-run < build/tests/client.js | tap-diff --color",
     "test": "npm-run-all build test:*",
-    "dev": "npm-run-all --parallel \"webpack-watch-dev -- --env.target=server\" \"webpack-watch-dev -- --env.target=client\" watch"
+    "dev": "npm-run-all --parallel \"webpack-watch-dev -- --env.target=server\" \"webpack-watch-dev -- --env.target=client\" watch",
+    "release:rename": "mv build `node -e \"var pkg = require('./package.json');console.log(pkg.name + '_v' + pkg.version + '_' + Date.now())\"`",
+    "release": "npm run build && cp package.json build && cd build && rimraf tests && npm i --production && rimraf package.json && cd - && npm run release:rename"
   },
   "watch": {
     "test:client": "build/tests/client.js",
