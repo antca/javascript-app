@@ -3,7 +3,10 @@ import { root } from 'react-nexus';
 
 class App extends Component {
   render() {
-    return null;
+    return (
+      <div>
+      </div>
+    );
   }
 }
 
