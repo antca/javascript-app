@@ -61,6 +61,12 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
           ],
         },
         {
+          test: /\.(woff2?|[ot]tf|eot)$/i,
+          loaders: [
+            `${web ? '' : 'fake-'}url?name=fonts/[hash].[ext]`,
+          ],
+        },
+        {
           test: /\.css$/i,
           loaders: ExtractTextWebpackPlugin.extract(
             web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
