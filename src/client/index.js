@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, match, browserHistory } from 'react-router';
 import { Provider } from 'react-tunnel';
+import { Resolver } from 'react-resolver';
 
 import createStore from '../data/createStore';
 
@@ -21,14 +22,14 @@ function createApp() {
   });
 }
 
-createApp().then((app) => ReactDOM.render(app, appDOMElement));
+createApp().then((app) => Resolver.render(() => app, appDOMElement));
 
 if(module.hot) {
   const { AppContainer } = require('react-hot-loader');
   function renderApp() {
     return createApp().then((app) => {
-      ReactDOM.render(
-        React.createElement(
+      Resolver.render(
+        () => React.createElement(
           AppContainer,
           null,
           app,

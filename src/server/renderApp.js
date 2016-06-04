@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/server';
 import { match, RouterContext } from 'react-router';
 import { Provider } from 'react-tunnel';
+import { Resolver } from 'react-resolver';
 
 import createStore from '../data/createStore';
 import routes from '../components/routes';
@@ -19,11 +20,15 @@ async function renderApp({ url }) {
       if(renderProps) {
         const router = React.createElement(RouterContext, renderProps);
         const provider = React.createElement(Provider, { provide: { store: createStore() } }, () => router);
-        const appMarkup = ReactDOM.renderToString(provider);
-        const index = React.createElement(Index, {
-          markup: appMarkup,
+        return Resolver.resolve(() => provider).then(({ Resolved, data }) => {
+          const resolved = React.createElement(Resolved);
+          const appMarkup = ReactDOM.renderToString(resolved);
+          const index = React.createElement(Index, {
+            markup: appMarkup,
+            data,
+          });
+          return resolve({ page: `<!DOCTYPE html>${ReactDOM.renderToStaticMarkup(index)}` });
         });
-        return resolve({ page: `<!DOCTYPE html>${ReactDOM.renderToStaticMarkup(index)}` });
       }
       resolve({ notFound: true });
     });
