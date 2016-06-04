@@ -108,7 +108,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
               },
             })
           ] : [
-            new StaticSiteGeneratorWebpackPlugin('server', ['index.html']),
+            new StaticSiteGeneratorWebpackPlugin('server', ['/']),
           ]),
         ]
       ),

@@ -3,7 +3,14 @@ import renderApp from '../../renderApp';
 
 const render = new Router()
 .get('*', async (context) => {
-  context.body = await renderApp(context, true);
+  const { notFound, redirectLocation, page } = await renderApp(context);
+  if(notFound) {
+    return context.throw(404);
+  }
+  if(redirectLocation) {
+    return context.redirect(redirectLocation.pathname + redirectLocation.search);
+  }
+  context.body = page;
 });
 
 export default render;

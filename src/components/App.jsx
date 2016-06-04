@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { root } from 'react-nexus';
+import { Link } from 'react-router';
 
 class App extends Component {
   render() {
-    return null;
+    return this.props.children;
   }
 }
 
-export default root()(App);
+export default App;
