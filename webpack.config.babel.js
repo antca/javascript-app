@@ -68,17 +68,17 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
         },
         {
           test: /\.css$/i,
-          exclude: /node_modules/,
+          exclude: /src\/components\/.*\.css$/i,
           loaders: ExtractTextWebpackPlugin.extract(
             web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
-            `css?${dev ? 'sourceMap&' : 'minimize&'}modules&importLoaders=1&localIdentName=${dev ? '[path]___[name]__[local]___' : ''}[hash:base64:5]!postcss`,
+            `css?${dev ? 'sourceMap' : 'minimize'}!postcss`,
           ),
         },
         {
-          test: /.*\/node_modules\/.*\.css$/i,
+          test: /src\/components\/.*\.css$/i,
           loaders: ExtractTextWebpackPlugin.extract(
             web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
-            `css?${dev ? 'sourceMap' : 'minimize'}`,
+            `css?${dev ? 'sourceMap&' : 'minimize&'}modules&importLoaders=1&localIdentName=${dev ? '[path]___[name]__[local]___' : ''}[hash:base64:5]!postcss`,
           ),
         },
       ],
