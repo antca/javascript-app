@@ -19,7 +19,7 @@ async function renderApp({ url }) {
       }
       if(renderProps) {
         const router = React.createElement(RouterContext, renderProps);
-        const provider = React.createElement(Provider, { provide: { store: createStore() } }, () => router);
+        const provider = React.createElement(Provider, { provide: createStore() }, () => router);
         return Resolver.resolve(() => provider).then(({ Resolved, data }) => {
           const resolved = React.createElement(Resolved);
           const appMarkup = ReactDOM.renderToString(resolved);
@@ -28,7 +28,7 @@ async function renderApp({ url }) {
             data,
           });
           return resolve({ page: `<!DOCTYPE html>${ReactDOM.renderToStaticMarkup(index)}` });
-        });
+        }).catch(reject);
       }
       resolve({ notFound: true });
     });
