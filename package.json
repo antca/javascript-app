@@ -31,6 +31,7 @@
     ],
     "plugins": [
       [
+        "babel-plugin-transform-decorators-legacy",
         "transform-async-to-module-method",
         {
           "module": "bluebird",
@@ -89,9 +90,11 @@
     "koa-mount": "^2.0.0",
     "koa-router": "^7.0.1",
     "koa-send": "^3.2.0",
+    "mobx": "^2.2.2",
+    "mobx-react": "^3.3.0",
     "react": "^15.0.1",
-    "react-addons-pure-render-mixin": "^15.0.1",
     "react-dom": "^15.0.1",
-    "react-nexus": "^4.0.0-beta.1"
+    "react-router": "^2.4.1",
+    "react-tunnel": "^0.1.0"
   }
 }

@@ -1,14 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, match, browserHistory } from 'react-router';
+import { Provider } from 'react-tunnel';
+
+import createStore from '../data/createStore';
 
 const appDOMElement = document.querySelector('#app');
+
+const store = createStore();
 
 function createApp() {
   return new Promise((resolve) => {
     match(
       { history: browserHistory, routes: require('../components/routes').default },
-      (error, redirectLocation, renderProps) => resolve(React.createElement(Router, renderProps)))
+      (error, redirectLocation, renderProps) => {
+        const router = React.createElement(Router, renderProps);
+        const provider = React.createElement(Provider, { provide: { store } }, () => router);
+        return resolve(provider);
+      });
   });
 }
 

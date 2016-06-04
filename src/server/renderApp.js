@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/server';
 import { match, RouterContext } from 'react-router';
+import { Provider } from 'react-tunnel';
 
+import createStore from '../data/createStore';
 import routes from '../components/routes';
 import Index from '../components/Index';
 
@@ -15,7 +17,9 @@ async function renderApp({ url }) {
         return resolve({ redirectLocation });
       }
       if(renderProps) {
-        const appMarkup = ReactDOM.renderToString(React.createElement(RouterContext, renderProps));
+        const router = React.createElement(RouterContext, renderProps);
+        const provider = React.createElement(Provider, { provide: { store: createStore() } }, () => router);
+        const appMarkup = ReactDOM.renderToString(provider);
         const index = React.createElement(Index, {
           markup: appMarkup,
         });
