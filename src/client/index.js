@@ -14,7 +14,7 @@ function createApp() {
       { history: browserHistory, routes: require('../components/routes').default },
       (error, redirectLocation, renderProps) => {
         const router = React.createElement(Router, renderProps);
-        const provider = React.createElement(Provider, { provide: createStore() }, () => router);
+        const provider = React.createElement(Provider, { provide: { store: createStore() } }, () => router);
         return resolve(provider);
       });
   });

@@ -19,7 +19,7 @@ async function renderApp({ url }) {
       }
       if(renderProps) {
         const router = React.createElement(RouterContext, renderProps);
-        const provider = React.createElement(Provider, { provide: createStore() }, () => router);
+        const provider = React.createElement(Provider, { provide: { store: createStore() } }, () => router);
         return Resolver.resolve(() => provider).then(({ Resolved, data }) => {
           const resolved = React.createElement(Resolved);
           const appMarkup = ReactDOM.renderToString(resolved);
