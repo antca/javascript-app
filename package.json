@@ -85,6 +85,7 @@
     "webpack-node-externals": "^1.2.0"
   },
   "dependencies": {
+    "babel-runtime": "^6.9.2",
     "bluebird": "^3.3.5",
     "forever": "^0.15.1",
     "koa": "^2.0.0-alpha.3",
