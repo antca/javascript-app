@@ -6,7 +6,7 @@ function Index({ markup, data }) {
       <head>
         <meta charSet='UTF-8' />
         <title>{'JavaScript App'}</title>
-        {module.hot ? null : <link rel='stylesheet' href='public/client.css' />}
+        {module.hot ? null : <link rel='stylesheet' href='/public/client.css' />}
       </head>
       <body>
         <div id='app' dangerouslySetInnerHTML={{ __html: markup }} />
@@ -14,7 +14,7 @@ function Index({ markup, data }) {
             window.__REACT_RESOLVER_PAYLOAD__ = ${JSON.stringify(data)}
         `}}>
         </script>
-        <script src='public/client.js'></script>
+        <script src='/public/client.js'></script>
       </body>
     </html>
   );
