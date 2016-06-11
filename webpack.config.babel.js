@@ -47,8 +47,8 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
           query: Object.assign({}, pkg.babel, {
             babelrc: false,
             presets: web ? ([
-              ...pkg.babel.presets.filter((preset) => preset !== 'es2015-auto'),
               ...(dev ? ['es2015'] : ['es2015-webpack', 'es2015-webpack-loose']),
+              ...pkg.babel.presets.filter((preset) => preset !== 'es2015-auto'),
             ]) : pkg.babel.presets,
             plugins: [...pkg.babel.plugins, ...(dev ? ['react-hot-loader/babel'] : [])],
           }),
