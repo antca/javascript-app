@@ -92,12 +92,11 @@
     "koa-mount": "^2.0.0",
     "koa-router": "^7.0.1",
     "koa-send": "^3.2.0",
-    "mobx": "^2.2.2",
-    "mobx-react": "^3.3.1",
     "react": "^15.1.0",
     "react-dom": "^15.1.0",
-    "react-resolver": "^3.0.1",
+    "react-redux": "^4.4.5",
     "react-router": "^2.4.1",
-    "react-tunnel": "^0.1.0"
+    "react-router-redux": "^4.0.5",
+    "redux": "^3.5.2"
   }
 }

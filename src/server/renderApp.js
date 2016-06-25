@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/server';
-import { match, RouterContext } from 'react-router';
-import { Provider } from 'react-tunnel';
-import { Resolver } from 'react-resolver';
+import { match, RouterContext, createMemoryHistory } from 'react-router';
+import { syncHistoryWithStore } from 'react-router-redux';
+import { Provider } from 'react-redux';
 
-import createStore from '../data/createStore';
+import createStore from '../redux/createStore';
 import routes from '../components/routes';
 import Index from '../components/Index';
 
@@ -18,17 +18,17 @@ async function renderApp({ url }) {
         return resolve({ redirectLocation });
       }
       if(renderProps) {
+        const memoryHistory = createMemoryHistory(url);
+        const store = createStore(memoryHistory);
+        const history = syncHistoryWithStore(memoryHistory, store);
         const router = React.createElement(RouterContext, renderProps);
-        const provider = React.createElement(Provider, { provide: { store: createStore() } }, () => router);
-        return Resolver.resolve(() => provider).then(({ Resolved, data }) => {
-          const resolved = React.createElement(Resolved);
-          const appMarkup = ReactDOM.renderToString(resolved);
-          const index = React.createElement(Index, {
-            markup: appMarkup,
-            data,
-          });
-          return resolve({ page: `<!DOCTYPE html>${ReactDOM.renderToStaticMarkup(index)}` });
-        }).catch(reject);
+        const provider = React.createElement(Provider, { store }, router);
+        const appMarkup = ReactDOM.renderToString(provider);
+        const index = React.createElement(Index, {
+          markup: appMarkup,
+          state: store.getState(),
+        });
+        return resolve({ page: `<!DOCTYPE html>${ReactDOM.renderToStaticMarkup(index)}` });
       }
       resolve({ notFound: true });
     });

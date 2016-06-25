@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Index({ markup, data }) {
+function Index({ markup, state }) {
   return (
     <html lang='en'>
       <head>
@@ -10,9 +10,7 @@ function Index({ markup, data }) {
       </head>
       <body>
         <div id='app' dangerouslySetInnerHTML={{ __html: markup }} />
-        <script dangerouslySetInnerHTML={{ __html: `
-            window.__REACT_RESOLVER_PAYLOAD__ = ${JSON.stringify(data)}
-        `}}>
+        <script dangerouslySetInnerHTML={{ __html: `window.__REDUX_STATE__ = ${JSON.stringify(state)}`}}>
         </script>
         <script src='/public/client.js'></script>
       </body>
