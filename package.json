@@ -8,7 +8,7 @@
     "webpack-watch-dev": "webpack --env.env=development --watch",
     "watch": "npm-watch",
     "clean": "rimraf build",
-    "start": "forever --minUptime 1000ms --spinSleepTime 1000ms build/server.js",
+    "start": "VUE_ENV=server forever --minUptime 1000ms --spinSleepTime 1000ms build/server.js",
     "build:server": "webpack --env.target=server --env.env=production",
     "build:client": "webpack --env.target=client --env.env=production",
     "build": "npm-run-all clean --parallel build:*",
@@ -26,8 +26,7 @@
   "babel": {
     "presets": [
       "es2015-auto",
-      "stage-1",
-      "react"
+      "stage-1"
     ],
     "plugins": [
       [
@@ -56,7 +55,6 @@
     "babel-preset-es2015-auto": "^1.1.0",
     "babel-preset-es2015-webpack": "^6.4.1",
     "babel-preset-es2015-webpack-loose": "^6.3.14",
-    "babel-preset-react": "^6.5.0",
     "babel-preset-stage-1": "^6.5.0",
     "css-loader": "^0.23.1",
     "extract-text-webpack-plugin": "^1.0.1",
@@ -72,31 +70,31 @@
     "npm-watch": "^0.1.4",
     "postcss-cssnext": "^2.6.0",
     "postcss-loader": "^0.9.1",
-    "react-hot-loader": "^3.0.0-beta.2",
+    "pug": "^2.0.0-beta3",
+    "pug-loader": "^1.0.2",
     "rimraf": "^2.5.2",
     "source-map-support": "^0.4.0",
-    "static-site-generator-webpack-plugin": "^2.1.0",
     "style-loader": "^0.13.1",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^2.1.1",
     "tap-diff": "^0.1.1",
     "tape": "^4.5.1",
     "tape-run": "^2.1.4",
     "url-loader": "^0.5.7",
+    "vue-loader": "^9.1.2",
     "webpack": "^2.1.0-beta.4",
     "webpack-node-externals": "^1.2.0"
   },
   "dependencies": {
     "babel-runtime": "^6.9.2",
     "bluebird": "^3.4.0",
+    "combine-streams": "^1.0.0",
     "forever": "^0.15.2",
     "koa": "^2.0.0-alpha.3",
     "koa-mount": "^2.0.0",
     "koa-router": "^7.0.1",
     "koa-send": "^3.2.0",
-    "react": "^15.1.0",
-    "react-dom": "^15.1.0",
-    "react-redux": "^4.4.5",
-    "react-router": "^2.4.1",
-    "react-router-redux": "^4.0.5",
-    "redux": "^3.5.2"
+    "vue": "^2.0.0-beta.1",
+    "vue-server-renderer": "^2.0.0-beta.1"
   }
 }

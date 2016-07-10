@@ -3,12 +3,28 @@ import webpack from 'webpack';
 import postCssCssNext from 'postcss-cssnext';
 import ExtractTextWebpackPlugin from 'extract-text-webpack-plugin';
 import webpackNodeExternals from 'webpack-node-externals';
-import StaticSiteGeneratorWebpackPlugin from 'static-site-generator-webpack-plugin';
 import pkg from './package';
 
 function config({ target = 'client', env = process.env.NODE_ENV }) {
   const web = target === 'client';
   const dev = env === 'development';
+
+  function getBabelLoader(vue) {
+    const config = Object.assign({}, pkg.babel, {
+      babelrc: false,
+      presets: web ? ([
+        ...(dev || vue ? ['es2015'] : ['es2015-webpack', 'es2015-webpack-loose']),
+        ...pkg.babel.presets.filter((preset) => preset !== 'es2015-auto'),
+      ]) : pkg.babel.presets,
+      plugins: [...pkg.babel.plugins],
+    });
+    return `babel?${JSON.stringify(config)}`;
+  }
+
+  const stylusLoader = ExtractTextWebpackPlugin.extract(
+    web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
+    `css?${dev ? 'sourceMap' : 'minimize'}!postcss!stylus`,
+  );
 
   return {
     target: web ? 'web' : 'node',
@@ -16,7 +32,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
     debug: dev,
     entry: {
       [target] : [
-        ...(dev ? (web ? ['webpack-hot-middleware/client', 'react-hot-loader/patch']
+        ...(dev ? (web ? ['webpack-hot-middleware/client']
                        : ['source-map-support/register', 'webpack/hot/poll?1000'])
                 : []),
         `./src/${target}`,
@@ -37,21 +53,22 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
     module: {
       loaders: [
         {
+          test: /\.(css|styl(us)?)$/i,
+          exclude: /src\/components\/.*\.css$/i,
+          loaders: stylusLoader,
+        },
+        {
+          test: /\.jsx?$/,
+          exclude: /node_modules/,
+          loader: getBabelLoader(false),
+        },
+        {
           test: /\.json$/i,
           loader: 'json',
         },
         {
-          test: /\.jsx?$/i,
-          exclude: /node_modules/,
-          loader: 'babel',
-          query: Object.assign({}, pkg.babel, {
-            babelrc: false,
-            presets: web ? ([
-              ...(dev ? ['es2015'] : ['es2015-webpack', 'es2015-webpack-loose']),
-              ...pkg.babel.presets.filter((preset) => preset !== 'es2015-auto'),
-            ]) : pkg.babel.presets,
-            plugins: [...pkg.babel.plugins, ...(dev ? ['react-hot-loader/babel'] : [])],
-          }),
+          test: /\.vue$/,
+          loader: 'vue',
         },
         {
           test: /\.(gif|png|jpe?g|svg)$/i,
@@ -60,30 +77,15 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
             'image-webpack?{progressive:true, optimizationLevel: 7, interlaced: false, pngquant:{quality: "65-90", speed: 4}}',
           ],
         },
-        {
-          test: /\.(woff2?|[ot]tf|eot)$/i,
-          loaders: [
-            `${web ? '' : 'fake-'}url?name=fonts/[hash].[ext]`,
-          ],
-        },
-        {
-          test: /\.css$/i,
-          exclude: /src\/components\/.*\.css$/i,
-          loaders: ExtractTextWebpackPlugin.extract(
-            web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
-            `css?${dev ? 'sourceMap' : 'minimize'}!postcss`,
-          ),
-        },
-        {
-          test: /src\/components\/.*\.css$/i,
-          loaders: ExtractTextWebpackPlugin.extract(
-            web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
-            `css?${dev ? 'sourceMap&' : 'minimize&'}modules&importLoaders=1&localIdentName=${dev ? '[path]___[name]__[local]___' : ''}[hash:base64:5]!postcss`,
-          ),
-        },
       ],
     },
     postcss: () => [postCssCssNext],
+    vue: {
+      loaders: {
+        babel: getBabelLoader(true),
+        stylus: stylusLoader,
+      }
+    },
     plugins: [
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(env),
@@ -107,9 +109,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
                 warnings: false,
               },
             })
-          ] : [
-            new StaticSiteGeneratorWebpackPlugin('server', ['/']),
-          ]),
+          ] : []),
         ]
       ),
     ],
@@ -123,7 +123,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
       __dirname: false,
     },
     resolve: {
-      extensions: ['', '.js', '.json', '.jsx'],
+      extensions: ['', '.js', '.json', '.vue'],
     },
   };
 }
