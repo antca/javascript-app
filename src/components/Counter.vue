@@ -1,27 +1,19 @@
 <template lang="pug">
   .Counter
-    h1 counter: {{ counter }}
-    button.plus(@click="plus") +
-    button.minus(@click="minus") -
+    h1 counter: {{ count }}
+    button.plus(@click="increment") +
+    button.minus(@click="decrement") -
 </template>
 
 <script lang="babel">
-const Counter = {
-  data() {
-    return {
-      counter: 0,
-    };
-  },
-  methods: {
-    plus() {
-      this.counter++;
-    },
-    minus() {
-      this.counter--;
-    }
-  }
-}
-export default Counter;
+import { mapGetters, mapActions } from 'vuex';
+export default {
+  data: () => ({
+    count: 0,
+  }),
+  computed: mapGetters(['count']),
+  methods: mapActions(['increment', 'decrement']),
+};
 </script>
 
 <style lang="stylus">

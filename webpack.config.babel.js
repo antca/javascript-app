@@ -13,18 +13,18 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
     const config = Object.assign({}, pkg.babel, {
       babelrc: false,
       presets: web ? ([
-        ...(dev || vue ? ['es2015'] : ['es2015-webpack', 'es2015-webpack-loose']),
+        dev ? 'es2015' : 'es2015-loose',
         ...pkg.babel.presets.filter((preset) => preset !== 'es2015-auto'),
       ]) : pkg.babel.presets,
-      plugins: [...pkg.babel.plugins],
+      plugins: pkg.babel.plugins,
     });
     return `babel?${JSON.stringify(config)}`;
   }
 
-  const stylusLoader = ExtractTextWebpackPlugin.extract(
-    web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
-    `css?${dev ? 'sourceMap' : 'minimize'}!postcss!stylus`,
-  );
+  const stylusLoader = ExtractTextWebpackPlugin.extract({
+    notExtractLoader: web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
+    loader: `css?${dev ? 'sourceMap' : 'minimize'}!postcss!stylus`,
+  });
 
   return {
     target: web ? 'web' : 'node',
@@ -90,7 +90,8 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(env),
       }),
-      new ExtractTextWebpackPlugin('client.css', {
+      new ExtractTextWebpackPlugin({
+        filename: 'client.css',
         allChunks: true,
         disable: dev || !web,
       }),
