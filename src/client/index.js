@@ -1,5 +1,3 @@
-import Vue from 'vue';
+import createVue from '../vue';
 
-import App from '../components/App';
-
-new Vue(App).$mount('#app');
+createVue(window.__VUEX_STATE__).$mount('#app');

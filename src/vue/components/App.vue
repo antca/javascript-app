@@ -5,13 +5,11 @@
 
 <script lang="babel">
 import Counter from './Counter';
-import createStore from '../vuex';
 
 export default {
   components: {
     Counter,
   },
-  store: createStore(),
 }
 </script>
 

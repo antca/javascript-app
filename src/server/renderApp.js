@@ -1,12 +1,12 @@
-import Vue from 'vue';
 import { createRenderer } from 'vue-server-renderer';
 import combineStreams from 'combine-streams';
 
-import App from '../components/App';
+import createVue from '../vue';
 
 const { renderToStream } = createRenderer();
 
 async function renderApp(context) {
+  const app = createVue();
   return combineStreams()
   .append(`
     <!DOCTYPE html>
@@ -16,8 +16,19 @@ async function renderApp(context) {
       </head>
       <body>
   `)
-  .append(renderToStream(new Vue(App)))
+  .append(renderToStream(app))
   .append(`
+        <script>
+          window.__VUEX_STATE__ = JSON.parse(
+            decodeURIComponent(
+              '${
+                encodeURIComponent(
+                  JSON.stringify(app.$store.state)
+                )
+              }'
+            )
+          );
+        </script>
         <script src="/public/client.js"></script>
       </body>
     </html>

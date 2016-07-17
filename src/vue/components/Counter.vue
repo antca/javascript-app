@@ -8,9 +8,6 @@
 <script lang="babel">
 import { mapGetters, mapActions } from 'vuex';
 export default {
-  data: () => ({
-    count: 0,
-  }),
   computed: mapGetters(['count']),
   methods: mapActions(['increment', 'decrement']),
 };

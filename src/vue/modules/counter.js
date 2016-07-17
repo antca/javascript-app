@@ -1,6 +1,4 @@
-import Vuex from 'vuex';
-
-function createCounterModule() {
+function counter() {
   return {
     state: {
       count: 0,
@@ -12,21 +10,21 @@ function createCounterModule() {
     },
     actions: {
       increment({ commit }) {
-        commit('INCREMENT');
+        commit('increment');
       },
       decrement({ commit }) {
-        commit('DECREMENT');
+        commit('decrement');
       },
     },
     mutations: {
-      INCREMENT(state) {
+      increment(state) {
         state.count++;
       },
-      DECREMENT(state) {
+      decrement(state) {
         state.count--;
       },
     },
   };
 }
 
-export default createCounterModule;
+export default counter;
