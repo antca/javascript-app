@@ -6,7 +6,7 @@ import createVue from '../vue';
 const { renderToStream } = createRenderer();
 
 async function renderApp(context) {
-  const app = createVue();
+  const app = createVue({ location: context.url });
   return combineStreams()
   .append(`
     <!DOCTYPE html>

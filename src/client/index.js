@@ -1,3 +1,3 @@
 import createVue from '../vue';
 
-createVue(window.__VUEX_STATE__).$mount('#app');
+createVue({ state: window.__VUEX_STATE__ }).$mount('#app');
