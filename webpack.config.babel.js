@@ -13,7 +13,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
     const config = Object.assign({}, pkg.babel, {
       babelrc: false,
       presets: web ? ([
-        dev ? 'es2015' : 'es2015-loose',
+        `es2015${dev ? '' : '-loose'}${vue ? '' : '-native-modules'}`,
         ...pkg.babel.presets.filter((preset) => preset !== 'es2015-auto'),
       ]) : pkg.babel.presets,
       plugins: pkg.babel.plugins,
