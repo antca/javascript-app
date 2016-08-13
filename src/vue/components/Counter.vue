@@ -1,8 +1,8 @@
 <template lang="pug">
-  .Counter
-    h1 counter: {{ count }}
-    button.plus(@click="increment") +
-    button.minus(@click="decrement") -
+.Counter
+  h2 Counter: {{ count }}
+  button.plus(@click="increment") +
+  button.minus(@click="decrement") -
 </template>
 
 <script lang="babel">
@@ -12,8 +12,3 @@ export default {
   methods: mapActions(['increment', 'decrement']),
 };
 </script>
-
-<style lang="stylus">
-  .Counter
-    color blue
-</style>

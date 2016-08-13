@@ -22,7 +22,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
   }
 
   const stylusLoader = ExtractTextWebpackPlugin.extract({
-    notExtractLoader: web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
+    fallbackLoader: web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
     loader: `css?${dev ? 'sourceMap' : 'minimize'}!postcss!stylus`,
   });
 

@@ -21,5 +21,5 @@ export default {
 
 <style lang="stylus">
 .App
-  color red
+  font-family sans-serif
 </style>
