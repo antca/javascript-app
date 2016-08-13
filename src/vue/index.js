@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import VueRouter from 'vue-router-next';
+import VueRouter from 'vue-router';
 
 Vue.use(Vuex);
 Vue.use(VueRouter);
@@ -14,14 +14,15 @@ function createVue({ state, location }) {
     mode: 'history',
     routes: routes(),
   });
-  if(location) {
-    router.setInitialLocation(location);
-  }
   const store = new Vuex.Store(indexModule());
+  const vue = new Vue({ ...App, store, router });
   if(state) {
     store.replaceState(state);
   }
-  return new Vue({ ...App, store, router });
+  if(location) {
+    router.replace(location);
+  }
+  return vue;
 }
 
 export default createVue;

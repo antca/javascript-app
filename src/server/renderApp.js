@@ -7,11 +7,16 @@ const { renderToStream } = createRenderer();
 
 async function renderApp(context) {
   const app = createVue({ location: context.url });
-  return combineStreams()
+  const route = app.$route;
+  if(route.redirectedFrom) {
+    return { redirect: route.fullPath };
+  }
+  const stream = combineStreams()
   .append(`
     <!DOCTYPE html>
     <html>
       <head>
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
         ${module.hot ? '': '<link rel="stylesheet" href="/public/client.css">'}
       </head>
       <body>
@@ -34,6 +39,7 @@ async function renderApp(context) {
     </html>
   `)
   .append(null);
+  return { stream };
 }
 
 export default renderApp;

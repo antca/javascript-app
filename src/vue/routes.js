@@ -3,8 +3,9 @@ import Counter from './components/Counter';
 
 function createRoutes() {
   return [
-    { path: '/', component: Home },
-    { path: '/counter', component: Counter },
+    { name: 'Home', path: '/home', component: Home },
+    { name: 'Counter', path: '/counter', component: Counter },
+    { path: '/', redirect: '/home' },
   ];
 }
 
