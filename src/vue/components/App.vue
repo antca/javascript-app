@@ -10,12 +10,7 @@
 </template>
 
 <script lang="babel">
-import Counter from './Counter';
-
 export default {
-  components: {
-    Counter,
-  },
 }
 </script>
 
