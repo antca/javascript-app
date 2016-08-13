@@ -1,4 +1,5 @@
 import path from 'path';
+import glob from 'glob';
 import webpack from 'webpack';
 import postCssCssNext from 'postcss-cssnext';
 import ExtractTextWebpackPlugin from 'extract-text-webpack-plugin';
@@ -37,7 +38,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
                 : []),
         `./src/${target}`,
       ],
-      [`${web ? '../' : ''}tests/${target}`]: `./src/${target}/tests`,
+      [`${web ? '../' : ''}tests/${target}`]: glob.sync(`./src/**/*.test?(.${target}).js`),
     },
     output: {
       libraryTarget: 'umd',

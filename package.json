@@ -61,6 +61,7 @@
     "fake-style-loader": "^1.0.1",
     "fake-url-loader": "^1.0.1",
     "forever": "^0.15.2",
+    "glob": "^7.0.5",
     "image-webpack-loader": "^2.0.0",
     "json-loader": "^0.5.4",
     "koa-compose": "^3.0.0",
