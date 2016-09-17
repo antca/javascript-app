@@ -1,8 +1,8 @@
-import Router from 'koa-router';
+import Router from 'koa-66';
 import renderApp from '../../renderApp';
 
 const render = new Router()
-.get('*', async (context) => {
+.get('/', async (context) => {
   context.set('Content-Type', 'text/html');
   const { html, redirect } = await renderApp(context);
   if(redirect) {

@@ -2,9 +2,11 @@ import path from 'path';
 import http from 'http';
 
 import Koa from 'koa';
-import koaSend from 'koa-send';
 import koaMount from 'koa-mount';
-import { api, render } from './routes';
+
+import filesMiddleware from './middlewares/files';
+
+let router = require('./router').default.routes();
 
 const app = new Koa();
 
@@ -15,14 +17,14 @@ if(module.hot) {
     }
   });
   app.use(require('./middlewares/dev').default());
+  module.hot.accept('./router', () => {
+    router = require('./router').default.routes();
+  });
 }
 
 app
-.use(koaMount('/api', api))
-.use(koaMount('/public', async (ctx) => {
-  await koaSend(ctx, ctx.path, { root: path.resolve(__dirname, 'public') });
-}))
-.use(render)
+.use(koaMount('/public', filesMiddleware(path.resolve(__dirname, 'public'))))
+.use((...args) => router(...args))
 .listen(8080, function () {
   console.log(`Server started on port ${this.address().port}!`);
 });

@@ -1,4 +1,4 @@
-import Router from 'koa-router';
+import Router from 'koa-66';
 
 const api = new Router()
 .get('/welcome', async (ctx) => ctx.body = {
