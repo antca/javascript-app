@@ -4,11 +4,11 @@ import renderApp from '../../renderApp';
 const render = new Router()
 .get('*', async (context) => {
   context.set('Content-Type', 'text/html');
-  const { stream, redirect } = await renderApp(context);
+  const { html, redirect } = await renderApp(context);
   if(redirect) {
     return context.redirect(redirect);
   }
-  context.body = stream;
+  context.body = html;
 });
 
 export default render;

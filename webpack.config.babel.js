@@ -10,23 +10,6 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
   const web = target === 'client';
   const dev = env === 'development';
 
-  function getBabelLoader(vue) {
-    const config = Object.assign({}, pkg.babel, {
-      babelrc: false,
-      presets: web ? ([
-        `es2015${dev ? '' : '-loose'}${vue ? '' : '-native-modules'}`,
-        ...pkg.babel.presets.filter((preset) => preset !== 'es2015-auto'),
-      ]) : pkg.babel.presets,
-      plugins: pkg.babel.plugins,
-    });
-    return `babel?${JSON.stringify(config)}`;
-  }
-
-  const stylusLoader = ExtractTextWebpackPlugin.extract({
-    fallbackLoader: web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
-    loader: `css?${dev ? 'sourceMap' : 'minimize'}!postcss!stylus`,
-  });
-
   return {
     target: web ? 'web' : 'node',
     devtool: dev ? (web ? 'eval-source-map' : 'inline-source-map') : null,
@@ -54,39 +37,48 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
     module: {
       loaders: [
         {
-          test: /\.(css|styl(us)?)$/i,
-          exclude: /src\/components\/.*\.css$/i,
-          loaders: stylusLoader,
+          test: /\.css$/i,
+          loaders: ExtractTextWebpackPlugin.extract({
+            fallbackLoader: web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
+            loader: `css?${dev ? 'sourceMap' : 'minimize'}!postcss`,
+          }),
         },
         {
-          test: /\.jsx?$/,
+          test: /\.jsx?$/i,
           exclude: /node_modules/,
-          loader: getBabelLoader(false),
+          loader: 'babel',
+          query: Object.assign({}, pkg.babel, {
+            babelrc: false,
+            presets: web ? ([
+              `es2015${dev ? '' : '-loose'}-native-modules`,
+              ...pkg.babel.presets.filter((preset) => preset !== 'es2015-auto'),
+            ]) : pkg.babel.presets,
+            plugins: pkg.babel.plugins,
+          }),
         },
         {
           test: /\.json$/i,
           loader: 'json',
         },
         {
-          test: /\.vue$/,
-          loader: 'vue',
-        },
-        {
           test: /\.(gif|png|jpe?g|svg)$/i,
           loaders: [
             `${web ? '' : 'fake-'}url?name=images/[hash].[ext]`,
-            'image-webpack?{progressive:true, optimizationLevel: 7, interlaced: false, pngquant:{quality: "65-90", speed: 4}}',
+            'image-webpack',
           ],
         },
       ],
     },
-    postcss: () => [postCssCssNext],
-    vue: {
-      loaders: {
-        babel: getBabelLoader(true),
-        stylus: stylusLoader,
-      }
+    imageWebpackLoader: {
+      progressive: true,
+      optimizationLevel: 7,
+      interlaced: false,
+      pngquant:{
+        quality: '65-90',
+        speed: 4,
+      },
     },
+    postcss: () => [postCssCssNext],
     plugins: [
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(env),
@@ -125,7 +117,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
       __dirname: false,
     },
     resolve: {
-      extensions: ['', '.js', '.json', '.vue'],
+      extensions: ['', '.js', '.json'],
     },
   };
 }
