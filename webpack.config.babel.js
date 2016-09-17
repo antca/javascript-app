@@ -39,8 +39,8 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
         {
           test: /\.css$/i,
           loaders: ExtractTextWebpackPlugin.extract({
-            fallbackLoader: web ? `style${dev ? '?sourceMap' : ''}` : 'fake-style',
-            loader: `css?${dev ? 'sourceMap' : 'minimize'}!postcss`,
+            fallbackLoader: web ? `style?sourceMap` : false,
+            loader: `css${web ? '' : '/locals'}?module&${dev ? 'sourceMap' : 'minimize'}!postcss`,
           }),
         },
         {
@@ -50,7 +50,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
           query: Object.assign({}, pkg.babel, {
             babelrc: false,
             presets: web ? ([
-              `es2015${dev ? '' : '-loose'}-native-modules`,
+              [`es2015`, { modules: false, loose: !dev }],
               ...pkg.babel.presets.filter((preset) => preset !== 'es2015-auto'),
             ]) : pkg.babel.presets,
             plugins: pkg.babel.plugins,
@@ -63,7 +63,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
         {
           test: /\.(gif|png|jpe?g|svg)$/i,
           loaders: [
-            `${web ? '' : 'fake-'}url?name=images/[hash].[ext]`,
+            `url?${JSON.stringify({ name: 'images/[hash].[ext]', emitFile: web })}`,
             'image-webpack',
           ],
         },
