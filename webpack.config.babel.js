@@ -10,10 +10,11 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
   const web = target === 'client';
   const dev = env === 'development';
 
+  const testFiles = glob.sync(`./src/**/*.test?(.${target}).js`);
+
   return {
     target: web ? 'web' : 'node',
-    devtool: dev ? (web ? 'eval-source-map' : 'inline-source-map') : null,
-    debug: dev,
+    devtool: dev ? (web ? 'eval-source-map' : 'inline-source-map') : false,
     entry: {
       [target] : [
         ...(dev ? (web ? ['webpack-hot-middleware/client']
@@ -21,7 +22,9 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
                 : []),
         `./src/${target}`,
       ],
-      [`${web ? '../' : ''}tests/${target}`]: glob.sync(`./src/**/*.test?(.${target}).js`),
+      ...(testFiles.length > 0 ? {
+        [`${web ? '../' : ''}tests/${target}`]: testFiles,
+      } : null)
     },
     output: {
       libraryTarget: 'umd',
@@ -29,10 +32,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
       publicPath: '/public/',
       chunkFilename: 'chunks/[id].js',
       filename: '[name].js',
-      pathInfo: dev,
-    },
-    url: {
-      dataUrlLimit: 1024,
+      pathinfo: dev,
     },
     module: {
       loaders: [
@@ -69,17 +69,24 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
         },
       ],
     },
-    imageWebpackLoader: {
-      progressive: true,
-      optimizationLevel: 7,
-      interlaced: false,
-      pngquant:{
-        quality: '65-90',
-        speed: 4,
-      },
-    },
-    postcss: () => [postCssCssNext],
     plugins: [
+      new webpack.LoaderOptionsPlugin({
+        options: {
+          url: {
+            dataUrlLimit: 1024,
+          },
+          postcss: () => [postCssCssNext],
+          imageWebpackLoader: {
+            progressive: true,
+            optimizationLevel: 7,
+            interlaced: false,
+            pngquant:{
+              quality: '65-90',
+              speed: 4,
+            },
+          },
+        },
+      }),
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(env),
       }),
@@ -111,13 +118,10 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
       whitelist: ['webpack/hot/poll?1000'],
     })],
     node: web ? {
-      fs: 'empty',
+      fs: false,
     } : {
       __filename: false,
       __dirname: false,
-    },
-    resolve: {
-      extensions: ['', '.js', '.json'],
     },
   };
 }
