@@ -44,7 +44,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
           }),
         },
         {
-          test: /\.jsx?$/i,
+          test: /\.js$/i,
           exclude: /node_modules/,
           loader: 'babel',
           query: Object.assign({}, pkg.babel, {
