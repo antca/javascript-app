@@ -5,6 +5,6 @@ import render from './render';
 
 const router = new Router()
 .mount('/api', api)
-.mount('/', render);
+.mount('*', render);
 
 export default router;
