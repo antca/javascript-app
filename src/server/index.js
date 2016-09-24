@@ -12,7 +12,7 @@ const app = new Koa();
 
 if(module.hot) {
   module.hot.status((status) => {
-    if(status === 'abort') {
+    if(status === 'abort' || status === 'fail') {
       process.exit(0);
     }
   });
