@@ -5,7 +5,6 @@ async function renderApp(context) {
       <head>
       </head>
       <body>
-        <h1>Hello World !</h1>
         <script src="/public/client.js"></script>
       </body>
     </html>
