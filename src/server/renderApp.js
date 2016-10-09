@@ -3,6 +3,11 @@ async function renderApp(context) {
     <!DOCTYPE html>
     <html>
       <head>
+        <style>
+          html, body {
+            margin: 0;
+          }
+        </style>
       </head>
       <body>
         <script src="/public/client.js"></script>

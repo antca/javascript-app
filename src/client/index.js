@@ -1,15 +1,19 @@
 if(module.hot) {
   module.hot.status((status) => {
     if(status === 'dispose') {
-      window.location.reload();
+      window.location.reload()
     }
-  });
+  })
 }
 
+function d(...vals) {
+  console.debug(...vals)
+  return vals[0]
+}
 
 const canvas = document.createElement('canvas')
-canvas.width = 500
-canvas.height = 500
+canvas.width = 720
+canvas.height = 720
 document.body.appendChild(canvas)
 
 const ctx = canvas.getContext('2d')
@@ -17,6 +21,21 @@ ctx.imageSmoothingEnabled = false
 
 const { width, height } = canvas
 const { abs } = Math
+
+async function loadModel(url) {
+  const response = await fetch(url)
+  const modelText = await response.text()
+  return modelText.split('\n').reduce((m, line) => {
+    const [type, ...data] = line.split(' ')
+    if(type === 'v') {
+      m.vertices.push(data.map(Number))
+    }
+    if(type === 'f') {
+      m.faces.push(data.map((f) => f.split('/')[0]).map(Number))
+    }
+    return m
+  }, { vertices: [], faces: [] })
+}
 
 function swap([x, y]) {
   return [y, x]
@@ -56,7 +75,10 @@ function line(a, b) {
   return points
 }
 
-function findBB(points) {
+function computeBB(points) {
+  if(points.length === 0) {
+    return [[0, 0], [0, 0]]
+  }
   let xMin = points[0][0]
   let yMin = points[0][1]
   let xMax = points[0][0]
@@ -72,7 +94,7 @@ function findBB(points) {
 }
 
 function plot(points, r = 0, g = 0, b = 0, a = 255) {
-  const bb = findBB(points)
+  const bb = computeBB(points)
   const width = abs(bb[1][0] - bb[0][0]) + 1
   const height = abs(bb[1][1] - bb[0][1]) + 1
   if(width === 0 || height === 0) {
@@ -115,7 +137,7 @@ function barycentric(a, b, c, p) {
 
 function fillTriangle(a, b, c) {
   const points = []
-  const [bbmin, bbmax] = findBB([a, b, c])
+  const [bbmin, bbmax] = computeBB([a, b, c])
   for (let x = bbmin[0]; x <= bbmax[0]; x++) {
     for (let y = bbmin[1]; y <= bbmax[1]; y++) {
       const p = [x, y]
@@ -127,22 +149,40 @@ function fillTriangle(a, b, c) {
   }
   return points
 }
-// const t1 = [[10, 70], [50, 160], [70, 80]]
-// const t2 = [[180, 50], [150, 1], [70, 180]]
-// const t3 = [[180, 150], [120, 160], [130, 180]]
-//
-// triangle(...t1)
-// triangle(...t2)
-// triangle(...t3)
-for(let x = 0; x < 10; x++) {
-  plot(
-    fillTriangle(
-      [Math.random() * width | 0, Math.random() * height | 0],
-      [Math.random() * width | 0, Math.random() * height | 0],
-      [Math.random() * width | 0, Math.random() * height | 0],
-    ),
-    Math.random() * 255 | 0,
-    Math.random() * 255 | 0,
-    Math.random() * 255 | 0,
-  )
+
+function renderWireframe(model) {
+  model.faces.map((f) => {
+    const face = f.map((i) => {
+      const [x, y] = model.vertices[i - 1]
+      return [((x + 1) * width / 2) | 0, ((-y + 1) * height / 2) | 0]
+    })
+    plot(
+     triangle(...face),
+     255,
+     255,
+     255,
+    )
+  })
 }
+
+function renderClown(model) {
+  model.faces.map((f) => {
+    const face = f.map((i) => {
+      const [x, y] = model.vertices[i - 1]
+      return [((x + 1) * width / 2) | 0, ((-y + 1) * height / 2) | 0]
+    })
+    plot(
+     fillTriangle(...face),
+     Math.random() * 255 | 0,
+     Math.random() * 255 | 0,
+     Math.random() * 255 | 0,
+    )
+  })
+}
+
+loadModel('https://raw.githubusercontent.com/ssloy/tinyrenderer/master/obj/african_head/african_head.obj')
+.then((model) => {
+  ctx.fillRect(0, 0, width, height)
+  renderClown(model)
+  renderWireframe(model)
+})
