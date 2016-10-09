@@ -124,6 +124,31 @@ function cross(a, b) {
   ]
 }
 
+function sub(a, b) {
+  return [
+    a[0] - b[0],
+    a[1] - b[1],
+    a[2] - b[2],
+  ]
+}
+
+function length(a) {
+  return Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2])
+}
+
+function normalize(a) {
+  const l = length(a)
+  return [a[0] / l, a[1] / l, a[2] / l]
+}
+
+function scale(a, s) {
+  return [a[0] * s, a[1] * s, a[2] * s]
+}
+
+function mul(a, b) {
+  return [a[0] * b[0], a[1] * b[1], a[2] * b[2]]
+}
+
 function barycentric(a, b, c, p) {
   const u = cross(
     [c[0] - a[0], b[0] - a[0], a[0] - p[0]],
@@ -180,9 +205,34 @@ function renderClown(model) {
   })
 }
 
+function renderWithLight(model, light) {
+  model.faces.map((f) => {
+    const face = f.map((i) => {
+      return model.vertices[i - 1]
+    })
+    const [a, b, c] = face
+    const normal = normalize(cross(sub(c, a), sub(b, a)))
+    const intensity = mul(normal, light)[2]
+    if(intensity > 0) {
+      const screenCoords = [
+        [((a[0] + 1) * width / 2) | 0, ((-a[1] + 1) * height / 2) | 0],
+        [((b[0] + 1) * width / 2) | 0, ((-b[1] + 1) * height / 2) | 0],
+        [((c[0] + 1) * width / 2) | 0, ((-c[1] + 1) * height / 2) | 0],
+      ]
+      plot(
+       fillTriangle(...screenCoords),
+        255 * intensity | 0,
+        255 * intensity | 0,
+        255 * intensity | 0,
+      )
+    }
+  })
+}
+
 loadModel('https://raw.githubusercontent.com/ssloy/tinyrenderer/master/obj/african_head/african_head.obj')
 .then((model) => {
   ctx.fillRect(0, 0, width, height)
-  renderClown(model)
-  renderWireframe(model)
+  // renderClown(model)
+  // renderWireframe(model)
+  renderWithLight(model, [0, 0, -1])
 })
