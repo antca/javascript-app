@@ -27,10 +27,10 @@ async function loadModel(url) {
   const modelText = await response.text()
   return modelText.split('\n').reduce((m, line) => {
     const [type, ...data] = line.split(' ')
-    if(type === 'v') {
+    if (type === 'v') {
       m.vertices.push(data.map(Number))
     }
-    if(type === 'f') {
+    if (type === 'f') {
       m.faces.push(data.map((f) => f.split('/')[0]).map(Number))
     }
     return m
@@ -76,14 +76,14 @@ function line(a, b) {
 }
 
 function computeBB(points) {
-  if(points.length === 0) {
+  if (points.length === 0) {
     return [[0, 0], [0, 0]]
   }
   let xMin = points[0][0]
   let yMin = points[0][1]
   let xMax = points[0][0]
   let yMax = points[0][1]
-  for(let i = 1; i < points.length; ++i) {
+  for (let i = 1; i < points.length; ++i) {
     const d = points[i]
     if(d[0] < xMin) xMin = d[0]
     if(d[0] > xMax) xMax = d[0]
@@ -97,11 +97,11 @@ function plot(points, r = 0, g = 0, b = 0, a = 255) {
   const bb = computeBB(points)
   const width = abs(bb[1][0] - bb[0][0]) + 1
   const height = abs(bb[1][1] - bb[0][1]) + 1
-  if(width === 0 || height === 0) {
+  if (width === 0 || height === 0) {
     return
   }
   const imageData = ctx.getImageData(bb[0][0], bb[0][1], width, height)
-  for(let i = 0; i < points.length; ++i) {
+  for (let i = 0; i < points.length; ++i) {
     const d = points[i]
     const pixelIndex = ((d[1] - bb[0][1]) * width * 4) + ((d[0] - bb[0][0]) * 4)
     imageData.data[pixelIndex] = r
@@ -145,6 +145,10 @@ function scale(a, s) {
   return [a[0] * s, a[1] * s, a[2] * s]
 }
 
+function add(a, s) {
+  return [a[0] + s, a[1] + s, a[2] + s]
+}
+
 function mul(a, b) {
   return [a[0] * b[0], a[1] * b[1], a[2] * b[2]]
 }
@@ -160,15 +164,25 @@ function barycentric(a, b, c, p) {
   return [1 - (u[0] + u[1]) / u[2], u[1] / u[2], u[0] / u[2]]
 }
 
-function fillTriangle(a, b, c) {
+function fillTriangle(zbuffer, a, b, c) {
+  const screenVec = [width / 2, height / 2, 1]
+  const as = mul(add(a, 1), screenVec).map((v) => v | 0)
+  const bs = mul(add(b, 1), screenVec).map((v) => v | 0)
+  const cs = mul(add(c, 1), screenVec).map((v) => v | 0)
   const points = []
-  const [bbmin, bbmax] = computeBB([a, b, c])
+  const [bbmin, bbmax] = computeBB([as, bs, cs])
   for (let x = bbmin[0]; x <= bbmax[0]; x++) {
     for (let y = bbmin[1]; y <= bbmax[1]; y++) {
-      const p = [x, y]
-      const bcScreen = barycentric(a, b, c, p)
+      const bcScreen = barycentric(as, bs, cs, [x, y])
       if (bcScreen[0] >= 0 && bcScreen[1] >= 0 && bcScreen[2] >= 0) {
-        points.push(p)
+        let z = 0
+        z += a[2] * bcScreen[0]
+        z += b[2] * bcScreen[1]
+        z += c[2] * bcScreen[2]
+        if (zbuffer[x + y * width] < z) {
+          zbuffer[x + y * width] = z
+          points.push([x, height - y])
+        }
       }
     }
   }
@@ -191,13 +205,13 @@ function renderWireframe(model) {
 }
 
 function renderClown(model) {
+  const zbuffer = new Array(width * height).fill(Number.MIN_VALUE)
   model.faces.map((f) => {
     const face = f.map((i) => {
-      const [x, y] = model.vertices[i - 1]
-      return [((x + 1) * width / 2) | 0, ((-y + 1) * height / 2) | 0]
+      return model.vertices[i - 1]
     })
     plot(
-     fillTriangle(...face),
+     fillTriangle(zbuffer, ...face),
      Math.random() * 255 | 0,
      Math.random() * 255 | 0,
      Math.random() * 255 | 0,
@@ -206,6 +220,7 @@ function renderClown(model) {
 }
 
 function renderWithLight(model, light) {
+  const zbuffer = new Array(width * height).fill(Number.MIN_VALUE)
   model.faces.map((f) => {
     const face = f.map((i) => {
       return model.vertices[i - 1]
@@ -213,14 +228,14 @@ function renderWithLight(model, light) {
     const [a, b, c] = face
     const normal = normalize(cross(sub(c, a), sub(b, a)))
     const intensity = mul(normal, light)[2]
-    if(intensity > 0) {
+    if (intensity > 0) {
       const screenCoords = [
-        [((a[0] + 1) * width / 2) | 0, ((-a[1] + 1) * height / 2) | 0],
-        [((b[0] + 1) * width / 2) | 0, ((-b[1] + 1) * height / 2) | 0],
-        [((c[0] + 1) * width / 2) | 0, ((-c[1] + 1) * height / 2) | 0],
+        [((a[0] + 1) * width / 2) | 0, ((-a[1] + 1) * height / 2) | 0, a[2]],
+        [((b[0] + 1) * width / 2) | 0, ((-b[1] + 1) * height / 2) | 0, b[2]],
+        [((c[0] + 1) * width / 2) | 0, ((-c[1] + 1) * height / 2) | 0, c[2]],
       ]
       plot(
-       fillTriangle(...screenCoords),
+       fillTriangle(zbuffer, ...face),
         255 * intensity | 0,
         255 * intensity | 0,
         255 * intensity | 0,
