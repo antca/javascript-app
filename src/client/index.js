@@ -6,7 +6,11 @@ if(module.hot) {
   })
 }
 
+let calls = 0
 function d(...vals) {
+  if(++calls > 1000) {
+    throw new Error('Looks like d has been called too much !')
+  }
   console.debug(...vals)
   return vals[0]
 }
@@ -14,6 +18,7 @@ function d(...vals) {
 const canvas = document.createElement('canvas')
 canvas.width = 720
 canvas.height = 720
+canvas.style.transform = 'scaleY(-1)'
 document.body.appendChild(canvas)
 
 const ctx = canvas.getContext('2d')
@@ -26,22 +31,41 @@ async function loadModel(url) {
   const response = await fetch(url)
   const modelText = await response.text()
   return modelText.split('\n').reduce((m, line) => {
-    const [type, ...data] = line.split(' ')
+    const [type, ...data] = line.split(/\s+/)
     if (type === 'v') {
       m.vertices.push(data.map(Number))
     }
+    if (type === 'vt') {
+      m.uvs.push(data.map(Number).map((v, i) => i === 1 ? 1 - v : v))
+    }
     if (type === 'f') {
-      m.faces.push(data.map((f) => f.split('/')[0]).map(Number))
+      m.faces.push(data.map((f) => f.split('/').map(Number)))
     }
     return m
-  }, { vertices: [], faces: [] })
+  }, { vertices: [], uvs: [], faces: [] })
+}
+
+async function loadTexture(url) {
+  return new Promise((resolve) => {
+    const image = new Image()
+    image.crossOrigin = 'Anonymous'
+    image.src = url
+    image.addEventListener('load', () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = image.width
+      canvas.height = image.height
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(image, 0, 0)
+      resolve(ctx.getImageData(0, 0, canvas.width, canvas.height))
+    })
+  })
 }
 
 function swap([x, y]) {
   return [y, x]
 }
 
-function line(a, b) {
+function line(a, b, ...color) {
   const points = []
   let steep = false
   if (abs(a[0] - b[0]) < abs(a[1] - b[1])) {
@@ -61,10 +85,10 @@ function line(a, b) {
   let y = a[1]
   for (let x = a[0]; x <= b[0]; x++) {
     if (steep) {
-      points.push([y, x])
+      points.push([y, x, ...color])
     }
     else {
-      points.push([x, y])
+      points.push([x, y, ...color])
     }
     e += de
     if (e > dx) {
@@ -93,7 +117,7 @@ function computeBB(points) {
   return [[xMin, yMin], [xMax, yMax]]
 }
 
-function plot(points, r = 0, g = 0, b = 0, a = 255) {
+function plot(points) {
   const bb = computeBB(points)
   const width = abs(bb[1][0] - bb[0][0]) + 1
   const height = abs(bb[1][1] - bb[0][1]) + 1
@@ -103,17 +127,21 @@ function plot(points, r = 0, g = 0, b = 0, a = 255) {
   const imageData = ctx.getImageData(bb[0][0], bb[0][1], width, height)
   for (let i = 0; i < points.length; ++i) {
     const d = points[i]
-    const pixelIndex = ((d[1] - bb[0][1]) * width * 4) + ((d[0] - bb[0][0]) * 4)
-    imageData.data[pixelIndex] = r
-    imageData.data[pixelIndex + 1] = g
-    imageData.data[pixelIndex + 2] = b
-    imageData.data[pixelIndex + 3] = a
+    const pixelIndex = (((d[0] - bb[0][0]) * 4 + (d[1] - bb[0][1]) * width * 4))
+    imageData.data[pixelIndex] = d[2]
+    imageData.data[pixelIndex + 1] = d[3]
+    imageData.data[pixelIndex + 2] = d[4]
+    imageData.data[pixelIndex + 3] = d[5]
   }
   ctx.putImageData(imageData, bb[0][0], bb[0][1])
 }
 
-function triangle(a, b, c) {
-  return [...line(a, b), ...line(b, c), ...line(c, a)]
+function triangle(a, b, c, ...color) {
+  return [
+    ...line(a, b, ...color),
+    ...line(b, c, ...color),
+    ...line(c, a, ...color)
+  ]
 }
 
 function cross(a, b) {
@@ -145,8 +173,12 @@ function scale(a, s) {
   return [a[0] * s, a[1] * s, a[2] * s]
 }
 
-function add(a, s) {
-  return [a[0] + s, a[1] + s, a[2] + s]
+function add(a, v) {
+  return [a[0] + v, a[1] + v, a[2] + v]
+}
+
+function sum(a, b) {
+  return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]
 }
 
 function mul(a, b) {
@@ -164,24 +196,42 @@ function barycentric(a, b, c, p) {
   return [1 - (u[0] + u[1]) / u[2], u[1] / u[2], u[0] / u[2]]
 }
 
-function fillTriangle(zbuffer, a, b, c) {
+function fillTriangle(zbuffer, texture, light, a, b, c) {
+  const normal = normalize(cross(sub(c, a), sub(b, a)))
+  const intensity = mul(normal, light)[2]
+  const points = []
+  if(intensity <= 0) {
+    return points
+  }
   const screenVec = [width / 2, height / 2, 1]
   const as = mul(add(a, 1), screenVec).map((v) => v | 0)
   const bs = mul(add(b, 1), screenVec).map((v) => v | 0)
   const cs = mul(add(c, 1), screenVec).map((v) => v | 0)
-  const points = []
   const [bbmin, bbmax] = computeBB([as, bs, cs])
   for (let x = bbmin[0]; x <= bbmax[0]; x++) {
     for (let y = bbmin[1]; y <= bbmax[1]; y++) {
-      const bcScreen = barycentric(as, bs, cs, [x, y])
-      if (bcScreen[0] >= 0 && bcScreen[1] >= 0 && bcScreen[2] >= 0) {
+      const [bca, bcb, bcc] = barycentric(as, bs, cs, [x, y])
+      if (bca >= 0 && bcb >= 0 && bcc >= 0) {
         let z = 0
-        z += a[2] * bcScreen[0]
-        z += b[2] * bcScreen[1]
-        z += c[2] * bcScreen[2]
+        z += a[2] * bca
+        z += b[2] * bcb
+        z += c[2] * bcc
         if (zbuffer[x + y * width] < z) {
+          const [,,,...uva] = a;
+          const [,,,...uvb] = b;
+          const [,,,...uvc] = c;
+          const puv = [scale(uva, bca), scale(uvb, bcb), scale(uvc, bcc)].reduce(sum)
+          const tc = mul(puv, [texture.width, texture.height]).map((v) => v | 0)
+          const bi = (tc[0] * 4 + tc[1] * 4 * texture.width)
           zbuffer[x + y * width] = z
-          points.push([x, height - y])
+          points.push([
+            x,
+            y,
+            texture.data[bi] * intensity,
+            texture.data[bi + 1] * intensity,
+            texture.data[bi + 2] * intensity,
+            texture.data[bi + 3],
+          ])
         }
       }
     }
@@ -191,63 +241,30 @@ function fillTriangle(zbuffer, a, b, c) {
 
 function renderWireframe(model) {
   model.faces.map((f) => {
-    const face = f.map((i) => {
+    const face = f.map(([i]) => {
       const [x, y] = model.vertices[i - 1]
-      return [((x + 1) * width / 2) | 0, ((-y + 1) * height / 2) | 0]
+      return [((x + 1) * width / 2) | 0, ((y + 1) * height / 2) | 0]
     })
-    plot(
-     triangle(...face),
-     255,
-     255,
-     255,
-    )
+    plot(triangle(...face, 255, 255, 255, 255))
   })
 }
 
-function renderClown(model) {
+function renderWithLight(model, texture, light) {
   const zbuffer = new Array(width * height).fill(Number.MIN_VALUE)
   model.faces.map((f) => {
-    const face = f.map((i) => {
-      return model.vertices[i - 1]
+    const face = f.map(([v, uv]) => {
+      return [...model.vertices[v - 1], ...model.uvs[uv - 1]]
     })
-    plot(
-     fillTriangle(zbuffer, ...face),
-     Math.random() * 255 | 0,
-     Math.random() * 255 | 0,
-     Math.random() * 255 | 0,
-    )
+    plot(fillTriangle(zbuffer, texture, light, ...face))
   })
 }
 
-function renderWithLight(model, light) {
-  const zbuffer = new Array(width * height).fill(Number.MIN_VALUE)
-  model.faces.map((f) => {
-    const face = f.map((i) => {
-      return model.vertices[i - 1]
-    })
-    const [a, b, c] = face
-    const normal = normalize(cross(sub(c, a), sub(b, a)))
-    const intensity = mul(normal, light)[2]
-    if (intensity > 0) {
-      const screenCoords = [
-        [((a[0] + 1) * width / 2) | 0, ((-a[1] + 1) * height / 2) | 0, a[2]],
-        [((b[0] + 1) * width / 2) | 0, ((-b[1] + 1) * height / 2) | 0, b[2]],
-        [((c[0] + 1) * width / 2) | 0, ((-c[1] + 1) * height / 2) | 0, c[2]],
-      ]
-      plot(
-       fillTriangle(zbuffer, ...face),
-        255 * intensity | 0,
-        255 * intensity | 0,
-        255 * intensity | 0,
-      )
-    }
-  })
-}
-
-loadModel('https://raw.githubusercontent.com/ssloy/tinyrenderer/master/obj/african_head/african_head.obj')
-.then((model) => {
+async function main() {
+  const model = await loadModel('https://raw.githubusercontent.com/ssloy/tinyrenderer/master/obj/african_head/african_head.obj')
+  const texture = await loadTexture('http://i.imgur.com/jGAm5aP.jpg')
   ctx.fillRect(0, 0, width, height)
-  // renderClown(model)
-  // renderWireframe(model)
-  renderWithLight(model, [0, 0, -1])
-})
+  renderWithLight(model, texture, [0, 0, -1])
+  //renderWireframe(model)
+}
+
+main()
