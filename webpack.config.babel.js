@@ -51,7 +51,7 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
             babelrc: false,
             presets: web ? ([
               [`es2015`, { modules: false, loose: !dev }],
-              ...pkg.babel.presets.filter((preset) => preset !== 'es2015-auto'),
+              ...pkg.babel.presets.filter((preset) => preset !== 'es2015-node'),
             ]) : pkg.babel.presets,
             plugins: pkg.babel.plugins,
           }),
