@@ -27,7 +27,6 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
       } : null)
     },
     output: {
-      libraryTarget: 'umd',
       path: path.resolve(__dirname, 'build', web ? 'public' : ''),
       publicPath: '/public/',
       chunkFilename: 'chunks/[id].js',
@@ -49,10 +48,23 @@ function config({ target = 'client', env = process.env.NODE_ENV }) {
           loader: 'babel',
           query: Object.assign({}, pkg.babel, {
             babelrc: false,
-            presets: web ? ([
-              [`es2015`, { modules: false, loose: !dev }],
-              ...pkg.babel.presets.filter((preset) => preset !== 'es2015-node'),
-            ]) : pkg.babel.presets,
+            presets: [
+              [
+                'env',
+                {
+                  targets: {
+                    ...(
+                      web
+                      ? { browsers: 'last 2 versions' }
+                      : { node: parseFloat(process.versions.node) }
+                    ),
+                  },
+                  modules: false,
+                  loose: !dev,
+                }
+              ],
+              ...pkg.babel.presets.filter((preset) => !Array.isArray(preset) || preset[0] !== 'env'),
+            ],
             plugins: pkg.babel.plugins,
           }),
         },
