@@ -1,3 +1,8 @@
+import modelUrl from 'url!./african_head.obj'
+import textureUrl from './african_head.jpg'
+import normalMapUrl from './african_head_nm.jpg'
+import specularMapUrl from './african_head_spec.jpg'
+
 if(module.hot) {
   module.hot.status((status) => {
     if(status === 'dispose') {
@@ -182,6 +187,56 @@ function mulM(a, b) {
   ]
 }
 
+function transposeM(m) {
+  const m2 = []
+  for(let i = 0; i < m.length; ++i) {
+    m2[i] = []
+    for(let j = 0; j < m[i].length; ++j) {
+      m2[i][j] = m[j][i]
+    }
+  }
+  return m2
+}
+
+function invM(m) {
+  const det = (
+    +m[0][0]*m[1][1]*m[2][2]*m[3][3]+m[0][0]*m[1][2]*m[2][3]*m[3][1]+m[0][0]*m[1][3]*m[2][1]*m[3][2]
+    +m[0][1]*m[1][0]*m[2][3]*m[3][2]+m[0][1]*m[1][2]*m[2][0]*m[3][3]+m[0][1]*m[1][3]*m[2][2]*m[3][0]
+    +m[0][2]*m[1][0]*m[2][1]*m[3][3]+m[0][2]*m[1][1]*m[2][3]*m[3][0]+m[0][2]*m[1][3]*m[2][0]*m[3][1]
+    +m[0][3]*m[1][0]*m[2][2]*m[3][1]+m[0][3]*m[1][1]*m[2][0]*m[3][2]+m[0][3]*m[1][2]*m[2][1]*m[3][0]
+    -m[0][0]*m[1][1]*m[2][3]*m[3][2]-m[0][0]*m[1][2]*m[2][1]*m[3][3]-m[0][0]*m[1][3]*m[2][2]*m[3][1]
+    -m[0][1]*m[1][0]*m[2][2]*m[3][3]-m[0][1]*m[1][2]*m[2][3]*m[3][0]-m[0][1]*m[1][3]*m[2][0]*m[3][2]
+    -m[0][2]*m[1][0]*m[2][3]*m[3][1]-m[0][2]*m[1][1]*m[2][0]*m[3][3]-m[0][2]*m[1][3]*m[2][1]*m[3][0]
+    -m[0][3]*m[1][0]*m[2][1]*m[3][2]-m[0][3]*m[1][1]*m[2][2]*m[3][0]-m[0][3]*m[1][2]*m[2][0]*m[3][1]
+  )
+  return [
+    [
+      m[1][1]*m[2][2]*m[3][3]+m[1][2]*m[2][3]*m[3][1]+m[1][3]*m[2][1]*m[3][2]-m[1][1]*m[2][3]*m[3][2]-m[1][2]*m[2][1]*m[3][3]-m[1][3]*m[2][2]*m[3][1],
+      m[0][1]*m[2][3]*m[3][2]+m[0][2]*m[2][1]*m[3][3]+m[0][3]*m[2][2]*m[3][1]-m[0][1]*m[2][2]*m[3][3]-m[0][2]*m[2][3]*m[3][1]-m[0][3]*m[2][1]*m[3][2],
+      m[0][1]*m[1][2]*m[3][3]+m[0][2]*m[1][3]*m[3][1]+m[0][3]*m[1][1]*m[3][2]-m[0][1]*m[1][3]*m[3][2]-m[0][2]*m[1][1]*m[3][3]-m[0][3]*m[1][2]*m[3][1],
+      m[0][1]*m[1][3]*m[2][2]+m[0][2]*m[1][1]*m[2][3]+m[0][3]*m[1][2]*m[2][1]-m[0][1]*m[1][2]*m[2][3]-m[0][2]*m[1][3]*m[2][1]-m[0][3]*m[1][1]*m[2][2],
+    ],
+    [
+      m[1][0]*m[2][3]*m[3][2]+m[1][2]*m[2][0]*m[3][3]+m[1][3]*m[2][2]*m[3][0]-m[1][0]*m[2][2]*m[3][3]-m[1][2]*m[2][3]*m[3][0]-m[1][3]*m[2][0]*m[3][2],
+      m[0][0]*m[2][2]*m[3][3]+m[0][2]*m[2][3]*m[3][0]+m[0][3]*m[2][0]*m[3][2]-m[0][0]*m[2][3]*m[3][2]-m[0][2]*m[2][0]*m[3][3]-m[0][3]*m[2][2]*m[3][0],
+      m[0][0]*m[1][3]*m[3][2]+m[0][2]*m[1][0]*m[3][3]+m[0][3]*m[1][2]*m[3][0]-m[0][0]*m[1][2]*m[3][3]-m[0][2]*m[1][3]*m[3][0]-m[0][3]*m[1][0]*m[3][2],
+      m[0][0]*m[1][2]*m[2][3]+m[0][2]*m[1][3]*m[2][0]+m[0][3]*m[1][0]*m[2][2]-m[0][0]*m[1][3]*m[2][2]-m[0][2]*m[1][0]*m[2][3]-m[0][3]*m[1][2]*m[2][0],
+    ],
+    [
+      m[1][0]*m[2][1]*m[3][3]+m[1][1]*m[2][3]*m[3][0]+m[1][3]*m[2][0]*m[3][1]-m[1][0]*m[2][3]*m[3][1]-m[1][1]*m[2][0]*m[3][3]-m[1][3]*m[2][1]*m[3][0],
+      m[0][0]*m[2][3]*m[3][1]+m[0][1]*m[2][0]*m[3][3]+m[0][3]*m[2][1]*m[3][0]-m[0][0]*m[2][1]*m[3][3]-m[0][1]*m[2][3]*m[3][0]-m[0][3]*m[2][0]*m[3][1],
+      m[0][0]*m[1][1]*m[3][3]+m[0][1]*m[1][3]*m[3][0]+m[0][3]*m[1][0]*m[3][1]-m[0][0]*m[1][3]*m[3][1]-m[0][1]*m[1][0]*m[3][3]-m[0][3]*m[1][1]*m[3][0],
+      m[0][0]*m[1][3]*m[2][1]+m[0][1]*m[1][0]*m[2][3]+m[0][3]*m[1][1]*m[2][0]-m[0][0]*m[1][1]*m[2][3]-m[0][1]*m[1][3]*m[2][0]-m[0][3]*m[1][0]*m[2][1],
+    ],
+    [
+      m[1][0]*m[2][2]*m[3][1]+m[1][1]*m[2][0]*m[3][2]+m[1][2]*m[2][1]*m[3][0]-m[1][0]*m[2][1]*m[3][2]-m[1][1]*m[2][2]*m[3][0]-m[1][2]*m[2][0]*m[3][1],
+      m[0][0]*m[2][1]*m[3][2]+m[0][1]*m[2][2]*m[3][0]+m[0][2]*m[2][0]*m[3][1]-m[0][0]*m[2][2]*m[3][1]-m[0][1]*m[2][0]*m[3][2]-m[0][2]*m[2][1]*m[3][0],
+      m[0][0]*m[1][2]*m[3][1]+m[0][1]*m[1][0]*m[3][2]+m[0][2]*m[1][1]*m[3][0]-m[0][0]*m[1][1]*m[3][2]-m[0][1]*m[1][2]*m[3][0]-m[0][2]*m[1][0]*m[3][1],
+      m[0][0]*m[1][1]*m[2][2]+m[0][1]*m[1][2]*m[2][0]+m[0][2]*m[1][0]*m[2][1]-m[0][0]*m[1][2]*m[2][1]-m[0][1]*m[1][0]*m[2][2]-m[0][2]*m[1][1]*m[2][0],
+    ],
+  ].map((v) => v.map(x => x * 1 / det))
+}
+
 function toCart(v) {
   const [x, y, z, w] = v
   return [x / w, y / w, z / w]
@@ -264,31 +319,37 @@ function getPixel(texture, uv) {
   ]
 }
 
-function gouraudShader(matrix, texture, light) {
-  let varying_intensity = [0, 0, 0]
+function phongShader(modelViewMatrix, projectionMatrix, viewportMatrix, texture, normalMap, specularMap, light) {
+  const uniform_M = mulM(projectionMatrix, modelViewMatrix)
+  const uniform_MIT = transposeM(invM(uniform_M))
   let varying_uv = [
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 1],
   ]
   return {
     vertex([v, uv, n], i) {
       varying_uv[0][i] = uv[0]
       varying_uv[1][i] = uv[1]
-      varying_intensity[i] = Math.max(0, mul(n, light).reduce((sum, x) => sum + x))
-      return applyMatrix([...v, 1], matrix)
+      return applyMatrix([...v, 1], mulM(viewportMatrix, uniform_M))
     },
     fragment(bc) {
-      const intensity = mul(varying_intensity, bc).reduce((sum, x) => sum + x)
       const uv = applyMatrix([...bc, 1], varying_uv)
-      const color = getPixel(texture, uv)
-      return [...scale(color, intensity), 255]
+      const n = normalize(applyMatrix([...getPixel(normalMap, uv).slice(0, -1), 1], uniform_MIT))
+      const l = normalize(applyMatrix([...light, 1], uniform_M))
+      const r = normalize(sub(scale(n, mul(n, l).reduce((sum, x) => sum + x) * 2), l))
+      const spec = Math.pow(Math.max(r[2], 0), getPixel(specularMap, uv)[0])
+      const diff = Math.max(0, mul(n, l).reduce((sum, x) => sum + x))
+      const c = getPixel(texture, uv).slice(0, -1)
+      const color = c.map((value) => Math.min(5 + value * (diff + (0.6 * spec)), 255))
+      return [...color, 255]
     }
   }
 }
 
-function cheapWireframeShader(matrix) {
+function cheapWireframeShader(modelViewMatrix, projectionMatrix, viewportMatrix) {
+  const matrix = mulM(viewportMatrix, mulM(projectionMatrix, modelViewMatrix))
   return {
     vertex([v, uv, n], i) {
       return applyMatrix([...v, 1], matrix)
@@ -312,27 +373,29 @@ function render(model, shader) {
 }
 
 async function main() {
-  const model = await loadModel('https://raw.githubusercontent.com/ssloy/tinyrenderer/master/obj/african_head/african_head.obj')
-  const texture = await loadTexture('http://i.imgur.com/jGAm5aP.jpg')
-  const light = [0.5, 0.5, 1.0]
+  const model = await loadModel(modelUrl)
+  const texture = await loadTexture(textureUrl)
+  const normalMap = await loadTexture(normalMapUrl)
+  const specularMap = await loadTexture(specularMapUrl)
+  const light = [1.0, 1.0, 1.0]
   const viewportMatrix = viewport(0, 0, width, height)
-  const lookAtMatrix = lookAt(
-    [0.6, 0.2, 1],
-    [0, 0, 0],
-    [0, 1, 0],
+  const modelViewMatrix = lookAt(
+    [1.0, 1.0, 3.0],
+    [0.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0],
   )
   const projectionMatrix = [
-    [0.6, 0.0, 0.0, 0.1],
-    [0.0, 0.6, 0.0, 0.1],
-    [0.0, 0.0, 0.6, 0.1],
+    [0.7, 0.0, 0.0, 0.0],
+    [0.0, 0.7, 0.0, 0.0],
+    [0.0, 0.0, 0.7, 0.0],
     [0.0, 0.0, -0.2, 1.0],
   ]
-  const matrix = mulM(viewportMatrix, mulM(lookAtMatrix, projectionMatrix))
-  const gouraud = gouraudShader(matrix, texture, light)
-  const wireframe = cheapWireframeShader(matrix)
+
   ctx.fillRect(0, 0, width, height)
-  render(model, gouraud)
-  //render(model, wireframe)
+  const phong = phongShader(modelViewMatrix, projectionMatrix, viewportMatrix, texture, normalMap, specularMap, light)
+  render(model, phong)
+  // const wireframe = cheapWireframeShader(modelViewMatrix, projectionMatrix, viewportMatrix)
+  // render(model, wireframe)
 }
 
 main()
